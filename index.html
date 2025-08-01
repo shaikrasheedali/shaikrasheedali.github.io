@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rasheed Ali Shaik | AI & Software Innovator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap');
+
+        :root {
+            --primary-color: #0d0d0d;
+            --secondary-color: #1a1a1a;
+            --accent-color: #00ffcc;
+            --text-color: #e0e0e0;
+            --header-font: 'Orbitron', sans-serif;
+            --body-font: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            font-family: var(--body-font);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background-image:
+                radial-gradient(circle at 20% 20%, rgba(0, 255, 204, 0.05) 0%, transparent 30%),
+                radial-gradient(circle at 80% 80%, rgba(7, 24, 61, 0.1) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+            padding: 2rem 0;
+        }
+
+        header {
+            text-align: center;
+            padding: 4rem 0;
+            border-bottom: 1px solid rgba(0, 255, 204, 0.2);
+            animation: fadeInDown 1s ease-in-out;
+        }
+
+        header h1 {
+            font-family: var(--header-font);
+            font-size: 3.5rem;
+            margin: 0;
+            color: var(--accent-color);
+            text-shadow: 0 0 15px var(--accent-color);
+        }
+
+        header h2 {
+            font-size: 1.5rem;
+            color: var(--text-color);
+            margin-top: 0.5rem;
+        }
+
+        section {
+            padding: 3rem 0;
+            border-bottom: 1px solid rgba(0, 255, 204, 0.1);
+            animation: fadeInUp 1s ease-in-out;
+        }
+
+        h3 {
+            font-family: var(--header-font);
+            font-size: 2rem;
+            color: var(--accent-color);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--secondary-color);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent-color);
+            box-shadow: 0 10px 30px rgba(0, 255, 204, 0.2);
+        }
+
+        .card h4 {
+            font-family: var(--header-font);
+            color: var(--accent-color);
+            margin-top: 0;
+        }
+
+        .card p {
+            line-height: 1.6;
+        }
+
+        .skills-list, .cert-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .skills-list li, .cert-list li {
+            background: rgba(0, 255, 204, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .cert-list li {
+            width: 100%;
+        }
+        
+        .cert-list li strong{
+            color: var(--accent-color);
+        }
+
+        .skills-list li:hover {
+            background: var(--accent-color);
+            color: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 2rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Rasheed Ali Shaik</h1>
+            <h2>Aspiring Software & AI Innovator</h2>
+        </header>
+
+        <section id="summary">
+            <h3>🎓 Professional Summary & Qualifications</h3>
+            <p>Aspiring Software & AI Innovator with a strong academic foundation in Computer Science (B.Tech, expected Nov 2026, Siddhartha Institute of Technology and Science, Hyderabad). A versatile innovator capable of designing, building, deploying, and securing intelligent systems, powered by a blend of academic rigor, real-world experience, and vibrant community engagement. His thoughtful storytelling, commitment to learning, and forward-thinking vision position him to stand out as a recognizable voice and an impactful contributor in the tech ecosystem.</p>
+        </section>
+
+        <section id="experience">
+            <h3>🧪 Internship & Project Experience</h3>
+            <div class="grid">
+                <div class="card">
+                    <h4>AI Research Intern (Swecha SOAI)</h4>
+                    <p><em>Jun 2024 – Jul 2025</em></p>
+                    <p>Leading Telugu ASR model development, audio preprocessing pipelines, tackling low-resource language challenges.</p>
+                </div>
+                <div class="card">
+                    <h4>Python Developer Intern (CODSOFT)</h4>
+                    <p><em>Apr–May 2024</em></p>
+                    <p>Built backend microservices, worked in Agile teams, enforced coding best practices and version control.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects">
+            <h3>🚀 Key Projects</h3>
+            <div class="grid">
+                <div class="card">
+                    <h4>RAG-powered Medical Info Chatbot</h4>
+                    <p>Fine-tuned visual-language model, ChromaDB, Flask.</p>
+                </div>
+                <div class="card">
+                    <h4>AI-enhanced Artistic QR Generator</h4>
+                    <p>SDXL + LoRA, Diffusers, Python.</p>
+                </div>
+                <div class="card">
+                    <h4>Scalable Movie Recommendation Engine</h4>
+                    <p>Flask backend, Scikit-learn, Pandas.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills">
+            <h3>💡 Skills, Tools & Technologies</h3>
+            <div class="card">
+                <ul class="skills-list">
+                    <li>Python</li>
+                    <li>JavaScript/React</li>
+                    <li>HTML/CSS</li>
+                    <li>Java (conceptual)</li>
+                    <li>LangChain</li>
+                    <li>Gemma 2</li>
+                    <li>Scikit-learn</li>
+                    <li>Diffusers</li>
+                    <li>SDXL & LoRA</li>
+                    <li>Vertex AI</li>
+                    <li>Gemini APIs</li>
+                    <li>Imagen</li>
+                    <li>Streamlit</li>
+                    <li>LlamaIndex</li>
+                    <li>ChromaDB</li>
+                    <li>Oracle Vector Search</li>
+                    <li>MySQL</li>
+                    <li>PostgreSQL</li>
+                    <li>Flask</li>
+                    <li>Git/GitHub</li>
+                    <li>Agile/Scrum</li>
+                    <li>AWS (basic)</li>
+                    <li>RAG</li>
+                    <li>NLP</li>
+                    <li>ASR</li>
+                    <li>Classification</li>
+                    <li>Regression</li>
+                    <li>Generative AI</li>
+                    <li>Google Workspace AI</li>
+                    <li>Copilot</li>
+                    <li>GitHub Galaxy</li>
+                    <li>Gemini CLI</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="certifications">
+            <h3>📜 Certifications & Credentials</h3>
+            <div class="card">
+                 <ul class="cert-list">
+                    <li><strong>Databricks Certified Generative AI Engineer</strong> (Aug 2024)</li>
+                    <li><strong>NVIDIA Certified:</strong> Disaster Risk with Satellite Imagery (May 2024)</li>
+                    <li><strong>Google Cloud Gen AI Virtual Internship</strong> (Sept 2024)</li>
+                    <li><strong>Machine Learning Specialization:</strong> Stanford/DeepLearning.AI (Dec 2024)</li>
+                    <li><strong>Gen AI 360:</strong> RAG with LangChain/LlamaIndex (Activeloop, Apr 2024)</li>
+                    <li><strong>Oracle Cloud AI Vector Search Pro</strong> (Jul 2024)</li>
+                    <li><strong>Google Prompting Essentials</strong> (Coursera, Jan 2025)</li>
+                    <li><strong>Software Engineering Essentials</strong> (Coursera, Apr 2025)</li>
+                    <li><strong>Google AI Essentials</strong> (Jan 2025)</li>
+                    <li><strong>JavaScript Essentials</strong> (Cisco, Aug 2024)</li>
+                    <li><strong>Data to AI with Gemini & Gemma:</strong> GDG Cochin (Jun 2024)</li>
+                    <li><strong>Fundamentals of UI/UX:</strong> Microsoft (Jan 2024)</li>
+                    <li><strong>Google Workspace:</strong> Bring AI to Work Workshop</li>
+                    <li><strong>Google Cloud Technical Series Attendee</strong> (Mar 2025)</li>
+                    <li><strong>Google Gen AI Academy Completion</strong> (May 2025)</li>
+                    <li><strong>Anthropic AI Fluency:</strong> Framework & Foundations (recently completed)</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="community">
+            <h3>🌐 Community Engagement & Thought Leadership</h3>
+             <p>Active in the Hyderabad Python Developer Group, Google Developer Groups (Hyderabad & Bangalore), Swecha Golang Community, Microsoft Learn Student Ambassadors, DevTown (Community Promoter), DeepLearning.AI Finetuning Tester. Attended AI/ML events—“Build with AI,” Telangana Tech & AI Leap featuring Uber CTO, MongoDB DevConnect, showcasing AWS, Google Cloud, and industry innovations. Regularly shares thoughtful LinkedIn insight posts on AI tech trends (Gemini, Mistral, Llama Stack), event reflections, learning journeys, and often uses humor and storytelling to connect and engage.</p>
+        </section>
+        
+         <section id="goals">
+            <h3>🎯 Career Goals & Strengths</h3>
+             <p>Passionate about building user-centric AI applications that solve real-world problems. Driven to bridge theoretical AI knowledge and practical deployment, especially focusing on MLOps, AI safety, responsible design, and full-stack integrations. Strong continuous learning mindset—rapidly earning certifications and attending events. Aiming to take on AI/ML Engineering or Research-oriented roles in dynamic, global environments, including Tata and other innovation-led organizations. Values community building and collaboration, contributing actively to open source and peer learning.</p>
+        </section>
+
+        <footer>
+            <p>© 2025 Rasheed Ali Shaik. All rights reserved.</p>
+        </footer>
+    </div>
+    <script>
+        document.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section');
+            const scrollPos = window.scrollY + window.innerHeight * 0.7;
+
+            sections.forEach(section => {
+                if (section.offsetTop < scrollPos) {
+                    section.style.animationPlayState = 'running';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
