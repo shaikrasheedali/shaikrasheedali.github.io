@@ -1,0 +1,106 @@
+{
+  "personal": {
+    "name": "BHAVANA VUPPU",
+    "phone": "+91 8501957330",
+    "email": "bhavanavuppu1715@gmail.com",
+    "linkedin": "linkedin.com/in/Bhavanaguptha",
+    "github": "github.com/Bhavana1715"
+  },
+  "summary": "Analytical and detail-oriented Computer Science Engineering student with strong expertise in Python, SQL, and data visualization. Skilled in transforming raw data into actionable insights through Exploratory Data Analysis (EDA), Feature Engineering, and interactive dashboards. Experienced in building end-to-end data solutions with measurable business impact. Seeking a Data Analyst position to apply technical and analytical skills to solve real-world problems.",
+  "skills": {
+    "languages": ["Python", "SQL"],
+    "libraries": ["Pandas", "NumPy", "scikit-learn", "Matplotlib"],
+    "databases": ["MySQL"],
+    "tools": ["Power BI", "Tableau", "MS Excel (Advanced)", "DAX", "PowerPoint"],
+    "techniques": ["Statistics", "EDA", "Feature Engineering", "Data Visualization"]
+  },
+  "experience": [
+    {
+      "role": "Power BI Intern",
+      "company": "TATA",
+      "period": "Nov 2024 – Dec 2024",
+      "achievements": [
+        "Designed and deployed 5+ interactive dashboards in Power BI",
+        "Enhanced data modeling and report-building efficiency by 20%",
+        "Created dynamic visualizations for executive decision-making"
+      ]
+    },
+    {
+      "role": "Python Intern",
+      "company": "Codtech IT Solutions",
+      "period": "May 2024 – Aug 2024",
+      "achievements": [
+        "Automated repetitive data handling tasks using Python",
+        "Reduced manual workload by 30%",
+        "Developed data processing scripts for large datasets"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "title": "Multiple Disease Prediction System",
+      "period": "Jan 2025 – May 2025",
+      "description": "Flask web app integrating multiple ML models to predict diabetes, heart disease, and Parkinson's disease with 85% accuracy.",
+      "technologies": ["Python", "Flask", "scikit-learn", "Bootstrap"],
+      "metrics": "85% accuracy",
+      "highlights": [
+        "Integrated 3 ML models for disease prediction",
+        "Built responsive web interface with Bootstrap",
+        "Achieved 85% prediction accuracy"
+      ]
+    },
+    {
+      "title": "Zepto Sales Analysis Dashboard",
+      "period": "Nov 2024 – Dec 2024",
+      "description": "Analyzed 10k+ sales records; found low-fat products contributed 77.6% of sales.",
+      "technologies": ["Pandas", "Power BI"],
+      "metrics": "77.6% sales contribution identified",
+      "highlights": [
+        "Analyzed 10,000+ sales records",
+        "Identified key product performance drivers",
+        "Created interactive Power BI dashboard"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "B.Tech in Computer Science and Engineering",
+      "institution": "Siddhartha Institute of Technology and Sciences",
+      "period": "2022 – 2026",
+      "grade": "CGPA: 9.3/10"
+    },
+    {
+      "degree": "12th Grade (MPC)",
+      "institution": "Sri Gayatri Junior College",
+      "period": "2020 – 2022",
+      "grade": "Percentage: 99.1"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Career Essentials in Data Analysis",
+      "issuer": "Microsoft & LinkedIn",
+      "year": "2024"
+    },
+    {
+      "name": "Data Visualization",
+      "issuer": "Microsoft & LinkedIn",
+      "year": "2024"
+    },
+    {
+      "name": "Data Analysis",
+      "issuer": "Codtech",
+      "year": "2024"
+    },
+    {
+      "name": "OpenCV: Python",
+      "issuer": "Online Course",
+      "year": "2024"
+    },
+    {
+      "name": "Communication & Presentation Skills",
+      "issuer": "TCS iON Career Edge",
+      "year": "2024"
+    }
+  ]
+}
