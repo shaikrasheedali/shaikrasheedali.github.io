@@ -111,28 +111,6 @@ export const Skills = () => {
           ))}
         </div>
 
-        {/* Proficiency Meters */}
-        <div className="bg-ink text-canvas p-8 lg:p-12">
-          <h3 className="font-display text-2xl font-bold mb-8">Proficiency Levels</h3>
-          <div className="grid md:grid-cols-2 gap-x-12 gap-y-6">
-            {allSkills.map((skill) => (
-              <div key={skill.name} data-skill={skill.name} className="space-y-2">
-                <div className="flex justify-between items-baseline">
-                  <span className="font-medium">{skill.name}</span>
-                  <span className="text-sm text-canvas/60">{skill.proficiency}%</span>
-                </div>
-                <div className="h-1 bg-canvas/20 overflow-hidden">
-                  <div
-                    className="h-full bg-canvas transition-all duration-1000 ease-out"
-                    style={{
-                      width: visibleMeters.has(skill.name) ? `${skill.proficiency}%` : '0%',
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </section>
   );

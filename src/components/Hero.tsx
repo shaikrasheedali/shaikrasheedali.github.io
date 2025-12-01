@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { ArrowRight, Download } from 'lucide-react';
 import resumeData from '@/data/resume.json';
+import { SqlCylinder } from './SqlCylinder';
 
 export const Hero = () => {
   const parallaxRef = useRef<HTMLDivElement>(null);
@@ -115,45 +116,10 @@ export const Hero = () => {
             </div>
           </div>
 
-          {/* Right Column - Abstract Visual */}
+          {/* Right Column - 3D SQL Cylinder */}
           <div className="hidden lg:block relative">
             <div className="relative w-full aspect-square">
-              {/* Geometric composition */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <svg viewBox="0 0 400 400" className="w-full h-full">
-                  {/* Grid background */}
-                  <defs>
-                    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-ink opacity-10" />
-                    </pattern>
-                  </defs>
-                  <rect width="400" height="400" fill="url(#grid)" />
-                  
-                  {/* Abstract shapes */}
-                  <circle cx="200" cy="200" r="120" fill="none" stroke="currentColor" strokeWidth="2" className="text-ink opacity-20 animate-float" />
-                  <rect x="140" y="140" width="120" height="120" fill="none" stroke="currentColor" strokeWidth="2" className="text-ink opacity-30" style={{ animationDelay: '1s' }} />
-                  <line x1="100" y1="100" x2="300" y2="300" stroke="currentColor" strokeWidth="1" className="text-ink opacity-15" />
-                  <line x1="300" y1="100" x2="100" y2="300" stroke="currentColor" strokeWidth="1" className="text-ink opacity-15" />
-                  
-                  {/* Data points */}
-                  {[...Array(12)].map((_, i) => {
-                    const angle = (i * 30 * Math.PI) / 180;
-                    const x = 200 + 140 * Math.cos(angle);
-                    const y = 200 + 140 * Math.sin(angle);
-                    return (
-                      <circle
-                        key={i}
-                        cx={x}
-                        cy={y}
-                        r="3"
-                        fill="currentColor"
-                        className="text-ink animate-pulse-subtle"
-                        style={{ animationDelay: `${i * 0.2}s` }}
-                      />
-                    );
-                  })}
-                </svg>
-              </div>
+              <SqlCylinder />
             </div>
           </div>
         </div>
