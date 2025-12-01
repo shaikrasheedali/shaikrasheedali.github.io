@@ -27,7 +27,7 @@ export const Hero = () => {
   };
 
   return (
-    <section id="hero" className="relative min-h-screen flex items-center overflow-hidden bg-canvas">
+    <section id="hero" className="relative min-h-screen flex items-center overflow-hidden bg-canvas pt-32">
       {/* Parallax Background Patterns */}
       <div ref={parallaxRef} className="absolute inset-0 pointer-events-none">
         {/* Layer 3 - Background circles */}
