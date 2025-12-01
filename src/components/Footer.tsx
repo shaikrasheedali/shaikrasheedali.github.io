@@ -53,7 +53,7 @@ export const Footer = () => {
                 href={`https://${resumeData.personal.linkedin}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 border border-canvas/30 flex items-center justify-center hover:bg-canvas hover:text-ink transition-colors"
+                className="w-10 h-10 border-2 border-canvas text-canvas flex items-center justify-center hover:bg-canvas hover:text-ink transition-colors"
                 aria-label="LinkedIn"
               >
                 <Linkedin className="w-5 h-5" />
@@ -62,7 +62,7 @@ export const Footer = () => {
                 href={`https://${resumeData.personal.github}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 border border-canvas/30 flex items-center justify-center hover:bg-canvas hover:text-ink transition-colors"
+                className="w-10 h-10 border-2 border-canvas text-canvas flex items-center justify-center hover:bg-canvas hover:text-ink transition-colors"
                 data-cursor="data"
                 aria-label="GitHub"
               >
@@ -70,7 +70,7 @@ export const Footer = () => {
               </a>
               <a
                 href={`mailto:${resumeData.personal.email}`}
-                className="w-10 h-10 border border-canvas/30 flex items-center justify-center hover:bg-canvas hover:text-ink transition-colors"
+                className="w-10 h-10 border-2 border-canvas text-canvas flex items-center justify-center hover:bg-canvas hover:text-ink transition-colors"
                 data-cursor="mail"
                 aria-label="Email"
               >
