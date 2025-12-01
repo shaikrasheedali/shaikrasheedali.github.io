@@ -74,33 +74,33 @@ export const Skills = () => {
     <section id="skills" className="section-padding bg-canvas" ref={sectionRef}>
       <div className="container-custom">
         {/* Header */}
-        <div className="max-w-3xl mb-16 reveal-slide-up">
-          <span className="text-sm uppercase tracking-[0.3em] text-ink-60 font-medium">
+        <div className="max-w-3xl mb-12 sm:mb-16 reveal-slide-up">
+          <span className="text-xs sm:text-sm uppercase tracking-[0.3em] text-ink-60 font-medium">
             Technical Expertise
           </span>
-          <h2 className="font-display font-bold text-ink mt-4">
+          <h2 className="font-display font-bold text-ink mt-3 sm:mt-4 text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
             Skills & <span className="italic">Proficiencies</span>
           </h2>
         </div>
 
         {/* Skill Groups Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {skillGroups.map((group, idx) => (
             <div
               key={group.title}
-              className="reveal-scale border border-border p-6 hover:shadow-elegant transition-all duration-300 relative overflow-hidden group"
+              className="reveal-scale border border-border p-5 sm:p-6 hover:shadow-elegant transition-all duration-300 relative overflow-hidden group"
               style={{ animationDelay: `${idx * 0.1}s` }}
             >
               {/* Pattern background */}
               <div className={`absolute inset-0 ${group.pattern} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
               
               <div className="relative z-10">
-                <h3 className="font-display text-xl font-bold mb-4 text-ink">{group.title}</h3>
+                <h3 className="font-display text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-ink">{group.title}</h3>
                 <div className="flex flex-wrap gap-2">
                   {group.items.map((skill) => (
                     <span
                       key={skill}
-                      className="px-3 py-1.5 bg-secondary text-ink text-sm font-medium hover:bg-ink hover:text-canvas transition-colors duration-200 cursor-pointer"
+                      className="px-2.5 sm:px-3 py-1 sm:py-1.5 bg-secondary text-ink text-xs sm:text-sm font-medium hover:bg-ink hover:text-canvas transition-colors duration-200 cursor-pointer"
                     >
                       {skill}
                     </span>
@@ -110,7 +110,6 @@ export const Skills = () => {
             </div>
           ))}
         </div>
-
       </div>
     </section>
   );

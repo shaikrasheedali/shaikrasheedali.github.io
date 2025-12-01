@@ -9,20 +9,20 @@ export const Projects = () => {
     <section id="projects" className="section-padding bg-canvas pattern-diagonal">
       <div className="container-custom">
         {/* Header */}
-        <div className="max-w-3xl mb-16 reveal-slide-up">
-          <span className="text-sm uppercase tracking-[0.3em] text-ink-60 font-medium">
+        <div className="max-w-3xl mb-12 sm:mb-16 reveal-slide-up">
+          <span className="text-xs sm:text-sm uppercase tracking-[0.3em] text-ink-60 font-medium">
             Featured Work
           </span>
-          <h2 className="font-display font-bold text-ink mt-4">
+          <h2 className="font-display font-bold text-ink mt-3 sm:mt-4 text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
             Projects & <span className="italic">Case Studies</span>
           </h2>
-          <p className="text-lg text-ink-60 mt-6 leading-relaxed">
+          <p className="text-base sm:text-lg text-ink-60 mt-4 sm:mt-6 leading-relaxed">
             End-to-end data solutions with measurable business impact
           </p>
         </div>
 
         {/* Projects */}
-        <div className="space-y-12">
+        <div className="space-y-8 sm:space-y-12">
           {resumeData.projects.map((project, idx) => (
             <article
               key={idx}
@@ -31,12 +31,12 @@ export const Projects = () => {
             >
               <div className="grid lg:grid-cols-5 gap-0">
                 {/* Visual Side */}
-                <div className="lg:col-span-2 bg-ink text-canvas p-8 lg:p-12 flex items-center justify-center relative overflow-hidden">
+                <div className="lg:col-span-2 bg-ink text-canvas p-6 sm:p-8 lg:p-12 flex items-center justify-center relative overflow-hidden">
                   {/* Pattern overlay */}
                   <div className="absolute inset-0 pattern-grid opacity-10" />
                   
                   {/* Project visual representation */}
-                  <div className="relative z-10 w-full max-w-xs">
+                  <div className="relative z-10 w-full max-w-[250px] sm:max-w-xs">
                     <svg viewBox="0 0 300 300" className="w-full h-full">
                       {/* Data visualization mockup */}
                       {idx === 0 ? (
@@ -89,33 +89,33 @@ export const Projects = () => {
                 </div>
 
                 {/* Content Side */}
-                <div className="lg:col-span-3 p-8 lg:p-12">
-                  <div className="space-y-6">
+                <div className="lg:col-span-3 p-6 sm:p-8 lg:p-12">
+                  <div className="space-y-4 sm:space-y-6">
                     <div>
-                      <div className="flex items-start justify-between gap-4">
-                        <h3 className="font-display text-3xl font-bold text-ink">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+                        <h3 className="font-display text-2xl sm:text-3xl font-bold text-ink">
                           {project.title}
                         </h3>
-                        <span className="text-sm text-ink-60 whitespace-nowrap">{project.period}</span>
+                        <span className="text-xs sm:text-sm text-ink-60 whitespace-nowrap">{project.period}</span>
                       </div>
-                      <p className="text-lg text-ink-70 mt-4 leading-relaxed">
+                      <p className="text-base sm:text-lg text-ink-70 mt-3 sm:mt-4 leading-relaxed">
                         {project.description}
                       </p>
                     </div>
 
                     {/* Key Metric */}
-                    <div className="inline-block px-4 py-2 bg-ink text-canvas font-display text-xl font-bold">
+                    <div className="inline-block px-3 sm:px-4 py-1.5 sm:py-2 bg-ink text-canvas font-display text-lg sm:text-xl font-bold">
                       {project.metrics}
                     </div>
 
                     {/* Technologies */}
                     <div>
-                      <h4 className="text-sm uppercase tracking-wider text-ink-60 mb-3">Technologies</h4>
+                      <h4 className="text-xs sm:text-sm uppercase tracking-wider text-ink-60 mb-2 sm:mb-3">Technologies</h4>
                       <div className="flex flex-wrap gap-2">
                         {project.technologies.map((tech) => (
                           <span
                             key={tech}
-                            className="px-3 py-1 border border-border text-sm font-medium text-ink hover:bg-ink hover:text-canvas transition-colors"
+                            className="px-2.5 sm:px-3 py-1 border border-border text-xs sm:text-sm font-medium text-ink hover:bg-ink hover:text-canvas transition-colors"
                           >
                             {tech}
                           </span>
@@ -127,7 +127,7 @@ export const Projects = () => {
                     <div>
                       <button
                         onClick={() => setExpandedProject(expandedProject === idx ? null : idx)}
-                        className="flex items-center gap-2 text-ink-60 hover:text-ink transition-colors group"
+                        className="flex items-center gap-2 text-ink-60 hover:text-ink transition-colors group text-sm sm:text-base"
                       >
                         <span className="font-medium">Key Highlights</span>
                         {expandedProject === idx ? (
@@ -138,10 +138,10 @@ export const Projects = () => {
                       </button>
                       
                       {expandedProject === idx && (
-                        <ul className="mt-4 space-y-2 text-ink-70">
+                        <ul className="mt-3 sm:mt-4 space-y-2 text-sm sm:text-base text-ink-70">
                           {project.highlights.map((highlight, hIdx) => (
                             <li key={hIdx} className="flex gap-3">
-                              <span className="text-ink-60 mt-1.5">—</span>
+                              <span className="text-ink-60 mt-1.5 flex-shrink-0">—</span>
                               <span>{highlight}</span>
                             </li>
                           ))}
@@ -150,7 +150,7 @@ export const Projects = () => {
                     </div>
 
                     {/* Action */}
-                    <button className="btn-ghost flex items-center gap-2" data-cursor="data">
+                    <button className="btn-ghost flex items-center gap-2 text-sm sm:text-base" data-cursor="data">
                       View Details
                       <ExternalLink className="w-4 h-4" />
                     </button>
@@ -159,7 +159,7 @@ export const Projects = () => {
               </div>
 
               {/* Decorative border */}
-              <div className="h-1 bg-ink" />
+              <div className="h-0.5 sm:h-1 bg-ink" />
             </article>
           ))}
         </div>

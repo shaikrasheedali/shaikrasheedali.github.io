@@ -82,26 +82,26 @@ export const Contact = () => {
     <section id="contact" className="section-padding bg-canvas">
       <div className="container-custom">
         {/* Header */}
-        <div className="max-w-3xl mb-16 reveal-slide-up">
-          <span className="text-sm uppercase tracking-[0.3em] text-ink-60 font-medium">
+        <div className="max-w-3xl mb-12 sm:mb-16 reveal-slide-up">
+          <span className="text-xs sm:text-sm uppercase tracking-[0.3em] text-ink-60 font-medium">
             Get In Touch
           </span>
-          <h2 className="font-display font-bold text-ink mt-4">
+          <h2 className="font-display font-bold text-ink mt-3 sm:mt-4 text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
             Let's Work <span className="italic">Together</span>
           </h2>
-          <p className="text-lg text-ink-60 mt-6 leading-relaxed">
+          <p className="text-base sm:text-lg text-ink-60 mt-4 sm:mt-6 leading-relaxed">
             Looking for a data analyst who can transform complex data into actionable insights? 
             Let's discuss how I can help drive your business forward.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-5 gap-12">
+        <div className="grid lg:grid-cols-5 gap-8 sm:gap-12">
           {/* Contact Form */}
           <div className="lg:col-span-3 reveal-slide-up">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
+            <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+              <div className="grid md:grid-cols-2 gap-5 sm:gap-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-ink mb-2">
+                  <label htmlFor="name" className="block text-xs sm:text-sm font-medium text-ink mb-2">
                     Your Name *
                   </label>
                   <input
@@ -110,16 +110,16 @@ export const Contact = () => {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 bg-secondary border ${
+                    className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-secondary border ${
                       errors.name ? 'border-red-500' : 'border-border'
-                    } focus:border-ink focus:outline-none transition-colors text-ink`}
+                    } focus:border-ink focus:outline-none transition-colors text-ink text-sm sm:text-base`}
                     maxLength={100}
                   />
-                  {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
+                  {errors.name && <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.name}</p>}
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-ink mb-2">
+                  <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-ink mb-2">
                     Email Address *
                   </label>
                   <input
@@ -128,18 +128,18 @@ export const Contact = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 bg-secondary border ${
+                    className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-secondary border ${
                       errors.email ? 'border-red-500' : 'border-border'
-                    } focus:border-ink focus:outline-none transition-colors text-ink`}
+                    } focus:border-ink focus:outline-none transition-colors text-ink text-sm sm:text-base`}
                     maxLength={255}
                   />
-                  {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+                  {errors.email && <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.email}</p>}
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-2 gap-5 sm:gap-6">
                 <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-ink mb-2">
+                  <label htmlFor="subject" className="block text-xs sm:text-sm font-medium text-ink mb-2">
                     Subject *
                   </label>
                   <input
@@ -148,16 +148,16 @@ export const Contact = () => {
                     name="subject"
                     value={formData.subject}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 bg-secondary border ${
+                    className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-secondary border ${
                       errors.subject ? 'border-red-500' : 'border-border'
-                    } focus:border-ink focus:outline-none transition-colors text-ink`}
+                    } focus:border-ink focus:outline-none transition-colors text-ink text-sm sm:text-base`}
                     maxLength={200}
                   />
-                  {errors.subject && <p className="mt-1 text-sm text-red-600">{errors.subject}</p>}
+                  {errors.subject && <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.subject}</p>}
                 </div>
 
                 <div>
-                  <label htmlFor="inquiryType" className="block text-sm font-medium text-ink mb-2">
+                  <label htmlFor="inquiryType" className="block text-xs sm:text-sm font-medium text-ink mb-2">
                     Inquiry Type
                   </label>
                   <select
@@ -165,7 +165,7 @@ export const Contact = () => {
                     name="inquiryType"
                     value={formData.inquiryType}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-secondary border border-border focus:border-ink focus:outline-none transition-colors text-ink"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-secondary border border-border focus:border-ink focus:outline-none transition-colors text-ink text-sm sm:text-base"
                   >
                     <option value="Hiring">Hiring</option>
                     <option value="Collaboration">Collaboration</option>
@@ -175,7 +175,7 @@ export const Contact = () => {
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-ink mb-2">
+                <label htmlFor="message" className="block text-xs sm:text-sm font-medium text-ink mb-2">
                   Message *
                 </label>
                 <textarea
@@ -184,18 +184,18 @@ export const Contact = () => {
                   value={formData.message}
                   onChange={handleChange}
                   rows={6}
-                  className={`w-full px-4 py-3 bg-secondary border ${
+                  className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-secondary border ${
                     errors.message ? 'border-red-500' : 'border-border'
-                  } focus:border-ink focus:outline-none transition-colors text-ink resize-none`}
+                  } focus:border-ink focus:outline-none transition-colors text-ink resize-none text-sm sm:text-base`}
                   maxLength={2000}
                 />
-                {errors.message && <p className="mt-1 text-sm text-red-600">{errors.message}</p>}
+                {errors.message && <p className="mt-1 text-xs sm:text-sm text-red-600">{errors.message}</p>}
                 <p className="mt-1 text-xs text-ink-60">
                   {formData.message.length} / 2000 characters
                 </p>
               </div>
 
-              <button type="submit" className="btn-primary w-full flex items-center justify-center gap-2" data-cursor="mail">
+              <button type="submit" className="btn-primary w-full flex items-center justify-center gap-2 text-sm sm:text-base" data-cursor="mail">
                 <Send className="w-4 h-4" />
                 Send Message
               </button>
@@ -207,56 +207,56 @@ export const Contact = () => {
           </div>
 
           {/* Contact Info & Map */}
-          <div className="lg:col-span-2 reveal-scale space-y-8">
+          <div className="lg:col-span-2 reveal-scale space-y-6 sm:space-y-8">
             {/* Direct Contact */}
-            <div className="border border-border p-8 bg-canvas">
-              <h3 className="font-display text-xl font-bold text-ink mb-6">Direct Contact</h3>
+            <div className="border border-border p-6 sm:p-8 bg-canvas">
+              <h3 className="font-display text-lg sm:text-xl font-bold text-ink mb-4 sm:mb-6">Direct Contact</h3>
               
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <a
                   href={`mailto:${resumeData.personal.email}`}
-                  className="flex items-start gap-4 group hover:opacity-70 transition-opacity"
+                  className="flex items-start gap-3 sm:gap-4 group hover:opacity-70 transition-opacity"
                   data-cursor="mail"
                 >
-                  <Mail className="w-5 h-5 text-ink-60 mt-0.5" />
-                  <div>
+                  <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-ink-60 mt-0.5 flex-shrink-0" />
+                  <div className="min-w-0">
                     <div className="text-xs uppercase tracking-wider text-ink-60 mb-1">Email</div>
-                    <div className="text-ink font-medium">{resumeData.personal.email}</div>
+                    <div className="text-ink font-medium text-sm sm:text-base break-all">{resumeData.personal.email}</div>
                   </div>
                 </a>
 
                 <a
                   href={`tel:${resumeData.personal.phone}`}
-                  className="flex items-start gap-4 group hover:opacity-70 transition-opacity"
+                  className="flex items-start gap-3 sm:gap-4 group hover:opacity-70 transition-opacity"
                 >
-                  <Phone className="w-5 h-5 text-ink-60 mt-0.5" />
+                  <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-ink-60 mt-0.5 flex-shrink-0" />
                   <div>
                     <div className="text-xs uppercase tracking-wider text-ink-60 mb-1">Phone</div>
-                    <div className="text-ink font-medium">{resumeData.personal.phone}</div>
+                    <div className="text-ink font-medium text-sm sm:text-base">{resumeData.personal.phone}</div>
                   </div>
                 </a>
 
-                <div className="flex items-start gap-4">
-                  <MapPin className="w-5 h-5 text-ink-60 mt-0.5" />
+                <div className="flex items-start gap-3 sm:gap-4">
+                  <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-ink-60 mt-0.5 flex-shrink-0" />
                   <div>
                     <div className="text-xs uppercase tracking-wider text-ink-60 mb-1">Location</div>
-                    <div className="text-ink font-medium">India</div>
+                    <div className="text-ink font-medium text-sm sm:text-base">India</div>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Schedule Call */}
-            <div className="bg-ink text-canvas p-8 relative overflow-hidden">
+            <div className="bg-ink text-canvas p-6 sm:p-8 relative overflow-hidden">
               <div className="absolute inset-0 pattern-halftone opacity-10" />
-              <div className="relative z-10 space-y-4">
-                <h3 className="font-display text-xl font-bold">Schedule a Chat</h3>
-                <p className="text-canvas/80">
+              <div className="relative z-10 space-y-3 sm:space-y-4">
+                <h3 className="font-display text-lg sm:text-xl font-bold">Schedule a Chat</h3>
+                <p className="text-canvas/80 text-sm sm:text-base">
                   Prefer a quick call? Click below to send me your preferred time.
                 </p>
                 <a
                   href={`mailto:${resumeData.personal.email}?subject=Schedule%20a%20Chat`}
-                  className="btn-outline border-canvas text-canvas hover:bg-canvas hover:text-ink inline-flex items-center gap-2"
+                  className="btn-outline border-canvas text-canvas hover:bg-canvas hover:text-ink inline-flex items-center gap-2 text-sm sm:text-base"
                   data-cursor="mail"
                 >
                   Schedule Call

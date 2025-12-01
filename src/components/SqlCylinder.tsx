@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
-import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import { motion, useMotionValue, useTransform, useSpring, useAnimationFrame } from 'framer-motion';
 
 interface KeywordItem {
   text: string;
@@ -25,7 +25,7 @@ export const SqlCylinder = () => {
   const [hoveredKeyword, setHoveredKeyword] = useState<string | null>(null);
   const [isHovering, setIsHovering] = useState(false);
   const rotationRef = useRef(0);
-  const frameRef = useRef<number>();
+  const [tick, setTick] = useState(0);
 
   // Mouse tracking for parallax
   const mouseX = useMotionValue(0);
@@ -55,6 +55,13 @@ export const SqlCylinder = () => {
     return () => window.removeEventListener('resize', updateRadius);
   }, []);
 
+  // Continuous rotation animation with Framer Motion
+  useAnimationFrame((time, delta) => {
+    const baseSpeed = isHovering ? 0.0002 : 0.0004;
+    rotationRef.current += delta * baseSpeed;
+    setTick(rotationRef.current);
+  });
+
   // Calculate keyword positions
   const keywords = useMemo<KeywordItem[]>(() => {
     const angleStep = (2 * Math.PI) / SQL_KEYWORDS.length;
@@ -83,32 +90,7 @@ export const SqlCylinder = () => {
         zIndex,
       };
     });
-  }, [radius, rotationRef.current]);
-
-  // Continuous rotation animation
-  useEffect(() => {
-    let lastTime = Date.now();
-    
-    const animate = () => {
-      const currentTime = Date.now();
-      const deltaTime = (currentTime - lastTime) / 1000;
-      lastTime = currentTime;
-      
-      // Adjust rotation speed based on hover state
-      const baseSpeed = isHovering ? 0.15 : 0.3;
-      rotationRef.current += baseSpeed * deltaTime;
-      
-      frameRef.current = requestAnimationFrame(animate);
-    };
-    
-    frameRef.current = requestAnimationFrame(animate);
-    
-    return () => {
-      if (frameRef.current) {
-        cancelAnimationFrame(frameRef.current);
-      }
-    };
-  }, [isHovering]);
+  }, [radius, tick]);
 
   // Mouse tracking
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -127,6 +109,7 @@ export const SqlCylinder = () => {
 
   const handleMouseLeave = () => {
     setIsHovering(false);
+    setHoveredKeyword(null);
     mouseX.set(0);
     mouseY.set(0);
   };
@@ -139,7 +122,7 @@ export const SqlCylinder = () => {
   return (
     <motion.div
       ref={containerRef}
-      className="relative w-full h-full flex items-center justify-center perspective-1000"
+      className="relative w-full h-full flex items-center justify-center"
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={handleMouseLeave}
@@ -148,7 +131,7 @@ export const SqlCylinder = () => {
       }}
     >
       <motion.div
-        className="relative"
+        className="relative w-full h-full flex items-center justify-center"
         style={{
           rotateX,
           rotateY,
@@ -158,17 +141,16 @@ export const SqlCylinder = () => {
         {sortedKeywords.map((keyword, index) => (
           <motion.div
             key={`${keyword.text}-${index}`}
-            className="absolute whitespace-nowrap font-mono text-ink cursor-pointer select-none"
+            className="absolute whitespace-nowrap font-mono text-ink cursor-pointer select-none transition-all duration-200"
             style={{
               transform: `translate3d(${keyword.x}px, ${keyword.y}px, ${keyword.z}px)`,
-              opacity: hoveredKeyword && hoveredKeyword !== keyword.text ? keyword.opacity * 0.5 : keyword.opacity,
+              opacity: hoveredKeyword && hoveredKeyword !== keyword.text ? keyword.opacity * 0.4 : keyword.opacity,
               scale: keyword.scale,
               filter: `blur(${keyword.blur}px)`,
               zIndex: keyword.zIndex,
               fontSize: window.innerWidth < 640 ? '0.75rem' : window.innerWidth < 1024 ? '0.875rem' : '1rem',
               fontWeight: hoveredKeyword === keyword.text ? 700 : 500,
               color: hoveredKeyword === keyword.text ? '#000000' : `hsl(0 0% ${20 + keyword.opacity * 30}%)`,
-              transition: 'font-weight 0.2s ease, color 0.2s ease',
             }}
             onMouseEnter={() => setHoveredKeyword(keyword.text)}
             onMouseLeave={() => setHoveredKeyword(null)}
