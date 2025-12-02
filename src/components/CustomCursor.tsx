@@ -1,14 +1,23 @@
 import { useEffect, useState } from 'react';
 import { Mail, Code2, ExternalLink, User } from 'lucide-react';
+import { motion, useMotionValue, useSpring, AnimatePresence } from 'framer-motion';
 
 type CursorMode = 'default' | 'link' | 'data' | 'mail' | 'profile';
 
 export const CustomCursor = () => {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [ringPosition, setRingPosition] = useState({ x: 0, y: 0 });
   const [mode, setMode] = useState<CursorMode>('default');
   const [isVisible, setIsVisible] = useState(false);
   const [isPointer, setIsPointer] = useState(false);
+
+  // Mouse position
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  // Smooth spring animation for the ring
+  // stiff: 150, damping: 15, mass: 0.1 gives a snappy but smooth feel
+  const springConfig = { damping: 20, stiffness: 300, mass: 0.5 };
+  const ringX = useSpring(mouseX, springConfig);
+  const ringY = useSpring(mouseY, springConfig);
 
   useEffect(() => {
     // Don't show custom cursor on touch devices
@@ -16,18 +25,13 @@ export const CustomCursor = () => {
       return;
     }
 
-    let animationFrameId: number;
-    let targetX = 0;
-    let targetY = 0;
-
     const handleMouseMove = (e: MouseEvent) => {
-      targetX = e.clientX;
-      targetY = e.clientY;
-      setPosition({ x: e.clientX, y: e.clientY });
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
 
       // Update cursor mode based on element type
       const target = e.target as HTMLElement;
-      
+
       if (target.closest('a, button, [role="button"]')) {
         setIsPointer(true);
         if (target.closest('[data-cursor="mail"]')) {
@@ -45,29 +49,19 @@ export const CustomCursor = () => {
       }
     };
 
-    const animateRing = () => {
-      setRingPosition(prev => ({
-        x: prev.x + (targetX - prev.x) * 0.15,
-        y: prev.y + (targetY - prev.y) * 0.15,
-      }));
-      animationFrameId = requestAnimationFrame(animateRing);
-    };
-
     const handleMouseEnter = () => setIsVisible(true);
     const handleMouseLeave = () => setIsVisible(false);
 
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseenter', handleMouseEnter);
     document.addEventListener('mouseleave', handleMouseLeave);
-    animationFrameId = requestAnimationFrame(animateRing);
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseenter', handleMouseEnter);
       document.removeEventListener('mouseleave', handleMouseLeave);
-      cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [mouseX, mouseY]);
 
   if (!isVisible) return null;
 
@@ -88,43 +82,70 @@ export const CustomCursor = () => {
 
   return (
     <>
-      {/* Outer ring - follows with lag */}
-      <div
+      {/* Outer ring - smooth spring follow */}
+      <motion.div
         className="fixed top-0 left-0 pointer-events-none z-[9999] mix-blend-difference"
         style={{
-          transform: `translate(${ringPosition.x}px, ${ringPosition.y}px)`,
-          transition: 'transform 0.12s cubic-bezier(0.4, 0, 0.2, 1)',
+          x: ringX,
+          y: ringY,
+          translateX: '-50%',
+          translateY: '-50%',
         }}
       >
-        <div
+        <motion.div
+          layoutId="cursor-ring"
           className={`
-            -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-canvas
-            transition-all duration-200
-            ${isPointer ? 'w-12 h-12 border-canvas' : 'w-9 h-9'}
+            rounded-full border-2 border-canvas
+            transition-colors duration-200
           `}
+          animate={{
+            width: isPointer ? 48 : 36,
+            height: isPointer ? 48 : 36,
+            borderColor: isPointer ? 'hsl(var(--canvas))' : 'hsl(var(--canvas))',
+            opacity: isPointer ? 1 : 0.5,
+          }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
           style={{
             boxShadow: '0 0 20px hsl(var(--canvas) / 0.3)',
           }}
         />
-      </div>
+      </motion.div>
 
       {/* Inner dot/icon - instant follow */}
-      <div
+      <motion.div
         className="fixed top-0 left-0 pointer-events-none z-[9999] mix-blend-difference"
         style={{
-          transform: `translate(${position.x}px, ${position.y}px)`,
+          x: mouseX,
+          y: mouseY,
+          translateX: '-50%',
+          translateY: '-50%',
         }}
       >
-        <div
+        <motion.div
           className={`
-            -translate-x-1/2 -translate-y-1/2 flex items-center justify-center
-            transition-all duration-200 text-canvas
-            ${isPointer ? 'scale-100' : 'scale-75'}
+            flex items-center justify-center
+            text-canvas
           `}
+          animate={{
+            scale: isPointer ? 1 : 0.5,
+          }}
+          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
         >
-          {getIcon()}
-        </div>
-      </div>
+          <AnimatePresence mode="wait">
+            {mode !== 'default' && (
+              <motion.div
+                key={mode}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                {getIcon()}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </motion.div>
     </>
   );
 };

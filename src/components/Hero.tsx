@@ -11,7 +11,7 @@ export const Hero = () => {
       if (!parallaxRef.current) return;
       const scrolled = window.scrollY;
       const layers = parallaxRef.current.querySelectorAll('[data-parallax]');
-      
+
       layers.forEach((layer) => {
         const speed = parseFloat(layer.getAttribute('data-parallax') || '1');
         const yPos = -(scrolled * speed);
@@ -82,10 +82,10 @@ export const Hero = () => {
               <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-display font-semibold text-ink-80 leading-tight">
                 <span className="hero-emphasis">Analytical</span>, <span className="hero-emphasis">detail-oriented</span>, and <span className="hero-emphasis">impactful</span> data analyst
               </h2>
-              
-              <p className="text-base sm:text-lg text-ink-60 max-w-xl leading-relaxed">
+
+              {/* <p className="text-base sm:text-lg text-ink-60 max-w-xl leading-relaxed">
                 {resumeData.summary}
-              </p>
+              </p> */}
 
               {/* Rotating skills */}
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-xs sm:text-sm text-ink-50 font-mono">
@@ -117,8 +117,8 @@ export const Hero = () => {
           </div>
 
           {/* Right Column - 3D SQL Cylinder */}
-          <div className="hidden lg:block relative">
-            <div className="relative w-full aspect-square">
+          <div className="hidden lg:block relative z-10 min-h-[400px]">
+            <div className="relative w-full h-full min-h-[400px] flex items-center justify-center">
               <SqlCylinder />
             </div>
           </div>

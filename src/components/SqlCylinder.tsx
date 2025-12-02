@@ -1,164 +1,158 @@
-import { useEffect, useRef, useState, useMemo } from 'react';
-import { motion, useMotionValue, useTransform, useSpring, useAnimationFrame } from 'framer-motion';
-
-interface KeywordItem {
-  text: string;
-  angle: number;
-  x: number;
-  y: number;
-  z: number;
-  scale: number;
-  opacity: number;
-  blur: number;
-  zIndex: number;
-}
+import { useRef, useState, useEffect, MouseEvent } from 'react';
+import { motion, useMotionValue, useTransform, useAnimationFrame, MotionValue } from 'framer-motion';
 
 const SQL_KEYWORDS = [
   'SELECT', 'FROM', 'WHERE', 'LEFT JOIN',
   'GROUP BY', 'ORDER BY', 'HAVING', 'LIMIT',
   'DISTINCT', 'INSERT', 'UPDATE', 'WITH',
-  'AS', 'ON', 'AND', 'OR'
+  'AS', 'ON', 'AND', 'OR',
+  'INNER JOIN', 'VALUES', 'SET', 'DELETE'
 ];
+
+interface CylinderItemProps {
+  text: string;
+  index: number;
+  total: number;
+  rotation: MotionValue<number>;
+  radius: number;
+  setHoveredKeyword: (keyword: string | null) => void;
+  hoveredKeyword: string | null;
+}
+
+const CylinderItem = ({
+  text,
+  index,
+  total,
+  rotation,
+  radius,
+  setHoveredKeyword,
+  hoveredKeyword
+}: CylinderItemProps) => {
+  const angleStep = (2 * Math.PI) / total;
+  const baseAngle = index * angleStep;
+
+  // Distribute vertically to form a cylinder
+  const y = (index - total / 2) * 15;
+
+  // Transform rotation into current angle
+  const angle = useTransform(rotation, (r) => baseAngle + r);
+
+  // Calculate 3D position based on angle
+  const x = useTransform(angle, (a) => Math.cos(a) * radius);
+  const z = useTransform(angle, (a) => Math.sin(a) * radius);
+
+  // Calculate depth-based effects
+  // z goes from -radius to +radius
+  // normalizedZ goes from 0 (back) to 1 (front)
+  const normalizedZ = useTransform(z, (currentZ) => (currentZ + radius) / (radius * 2));
+
+  const scale = useTransform(normalizedZ, [0, 1], [0.7, 1.1]);
+  const opacity = useTransform(normalizedZ, [0, 0.2, 1], [0.1, 0.4, 1]);
+  const blur = useTransform(normalizedZ, [0, 1], [4, 0]);
+  const zIndex = useTransform(normalizedZ, (n) => Math.round(n * 100));
+
+  // Create derived values at the top level to avoid hook violations
+  const dimmedOpacity = useTransform(opacity, (o) => o * 0.3);
+  const blurFilter = useTransform(blur, (b) => `blur(${b}px)`);
+
+  const isHovered = hoveredKeyword === text;
+  const isAnyHovered = hoveredKeyword !== null;
+
+  return (
+    <motion.div
+      className="absolute whitespace-nowrap font-mono cursor-pointer select-none transition-colors duration-200 flex items-center justify-center"
+      style={{
+        x,
+        y,
+        z,
+        scale,
+        opacity: isAnyHovered && !isHovered ? dimmedOpacity : opacity,
+        filter: blurFilter,
+        zIndex,
+        color: isHovered ? '#000000' : '#333333',
+        fontWeight: isHovered ? 700 : 500,
+      }}
+      onMouseEnter={() => setHoveredKeyword(text)}
+      onMouseLeave={() => setHoveredKeyword(null)}
+    >
+      <span className={`px-2 py-1 rounded-md ${isHovered ? 'bg-secondary/20' : ''}`}>
+        {text}
+      </span>
+    </motion.div>
+  );
+};
 
 export const SqlCylinder = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [hoveredKeyword, setHoveredKeyword] = useState<string | null>(null);
-  const [isHovering, setIsHovering] = useState(false);
-  const rotationRef = useRef(0);
-  const [tick, setTick] = useState(0);
-
-  // Mouse tracking for parallax
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  
-  // Smooth spring physics for mouse movement
-  const springConfig = { damping: 20, stiffness: 100 };
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [5, -5]), springConfig);
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-5, 5]), springConfig);
-
-  // Responsive radius
   const [radius, setRadius] = useState(200);
 
+  // The rotation value that drives the animation
+  const rotation = useMotionValue(0);
+
+  // Mouse interaction for rotation speed/direction
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  // Responsive radius with fallback
   useEffect(() => {
     const updateRadius = () => {
-      if (window.innerWidth < 640) {
-        setRadius(120);
-      } else if (window.innerWidth < 1024) {
-        setRadius(160);
-      } else {
-        setRadius(200);
-      }
+      const width = window.innerWidth;
+      if (width < 640) setRadius(120);
+      else if (width < 1024) setRadius(160);
+      else setRadius(220); // Increased for larger screens
     };
-    
+
+    // Initial call
     updateRadius();
+
     window.addEventListener('resize', updateRadius);
     return () => window.removeEventListener('resize', updateRadius);
   }, []);
 
-  // Continuous rotation animation with Framer Motion
+  // Animation loop
   useAnimationFrame((time, delta) => {
-    const baseSpeed = isHovering ? 0.0002 : 0.0004;
-    rotationRef.current += delta * baseSpeed;
-    setTick(rotationRef.current);
+    // Base rotation speed
+    let speed = 0.0005;
+
+    // If hovering, slow down
+    if (hoveredKeyword) {
+      speed = 0.0001;
+    }
+
+    rotation.set(rotation.get() + delta * speed);
   });
 
-  // Calculate keyword positions
-  const keywords = useMemo<KeywordItem[]>(() => {
-    const angleStep = (2 * Math.PI) / SQL_KEYWORDS.length;
-    
-    return SQL_KEYWORDS.map((text, i) => {
-      const angle = i * angleStep + rotationRef.current;
-      const x = Math.cos(angle) * radius;
-      const z = Math.sin(angle) * radius;
-      
-      // Calculate depth-based effects
-      const normalizedZ = (z + radius) / (radius * 2); // 0 to 1
-      const scale = 0.8 + normalizedZ * 0.3; // 0.8 to 1.1
-      const opacity = 0.3 + normalizedZ * 0.7; // 0.3 to 1.0
-      const blur = (1 - normalizedZ) * 3; // 0 to 3px
-      const zIndex = Math.round(normalizedZ * 100);
-      
-      return {
-        text,
-        angle,
-        x,
-        y: 0,
-        z,
-        scale,
-        opacity,
-        blur,
-        zIndex,
-      };
-    });
-  }, [radius, tick]);
-
-  // Mouse tracking
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
-    
     const rect = containerRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    
-    const x = (e.clientX - centerX) / (rect.width / 2);
-    const y = (e.clientY - centerY) / (rect.height / 2);
-    
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
     mouseX.set(x);
     mouseY.set(y);
   };
 
-  const handleMouseLeave = () => {
-    setIsHovering(false);
-    setHoveredKeyword(null);
-    mouseX.set(0);
-    mouseY.set(0);
-  };
-
-  // Sort keywords by z-index for proper layering
-  const sortedKeywords = useMemo(() => {
-    return [...keywords].sort((a, b) => a.zIndex - b.zIndex);
-  }, [keywords]);
-
   return (
-    <motion.div
+    <div
       ref={containerRef}
-      className="relative w-full h-full flex items-center justify-center"
+      className="relative w-full h-full flex items-center justify-center perspective-1000"
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        perspective: '1000px',
-      }}
+      style={{ perspective: '1000px' }}
     >
-      <motion.div
-        className="relative w-full h-full flex items-center justify-center"
-        style={{
-          rotateX,
-          rotateY,
-          transformStyle: 'preserve-3d',
-        }}
-      >
-        {sortedKeywords.map((keyword, index) => (
-          <motion.div
-            key={`${keyword.text}-${index}`}
-            className="absolute whitespace-nowrap font-mono text-ink cursor-pointer select-none transition-all duration-200"
-            style={{
-              transform: `translate3d(${keyword.x}px, ${keyword.y}px, ${keyword.z}px)`,
-              opacity: hoveredKeyword && hoveredKeyword !== keyword.text ? keyword.opacity * 0.4 : keyword.opacity,
-              scale: keyword.scale,
-              filter: `blur(${keyword.blur}px)`,
-              zIndex: keyword.zIndex,
-              fontSize: window.innerWidth < 640 ? '0.75rem' : window.innerWidth < 1024 ? '0.875rem' : '1rem',
-              fontWeight: hoveredKeyword === keyword.text ? 700 : 500,
-              color: hoveredKeyword === keyword.text ? '#000000' : `hsl(0 0% ${20 + keyword.opacity * 30}%)`,
-            }}
-            onMouseEnter={() => setHoveredKeyword(keyword.text)}
-            onMouseLeave={() => setHoveredKeyword(null)}
-          >
-            {keyword.text}
-          </motion.div>
+      <div className="relative w-full h-full flex items-center justify-center transform-style-3d">
+        {SQL_KEYWORDS.map((text, i) => (
+          <CylinderItem
+            key={i}
+            text={text}
+            index={i}
+            total={SQL_KEYWORDS.length}
+            rotation={rotation}
+            radius={radius}
+            setHoveredKeyword={setHoveredKeyword}
+            hoveredKeyword={hoveredKeyword}
+          />
         ))}
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 };
