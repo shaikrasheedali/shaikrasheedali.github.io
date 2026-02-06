@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en" class="antialiased scroll-smooth scroll-pt-24">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RA-FLow | Next-Gen Aerodynamic Simulation</title>
+    
+    <!-- Fonts: Space Grotesk for Tech Headers, Inter for UI -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- GSAP & Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Configuration & Custom Styles -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        obsidian: '#050505',
+                        charcoal: '#0a0a0a',
+                        neonBlue: '#00f3ff',
+                        neonRed: '#ff003c',
+                        glass: 'rgba(255, 255, 255, 0.03)'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    letterSpacing: {
+                        'ultra-wide': '0.2em',
+                    },
+                    animation: {
+                        'infinite-scroll': 'infinite-scroll 40s linear infinite',
+                    },
+                    keyframes: {
+                        'infinite-scroll': {
+                            from: { transform: 'translateX(0)' },
+                            to: { transform: 'translateX(-50%)' }, /* Seamless loop */
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* --- Core Environment --- */
+        body {
+            background-color: #050505;
+            color: #e5e5e5;
+            overflow-x: hidden;
+        }
+
+        /* Scrollbar Hiding */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050505;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+
+        /* --- Visual Effects --- */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .glass-panel {
+            background: rgba(10, 10, 10, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .glass-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s ease;
+        }
+        
+        .glass-card:hover {
+            border-color: rgba(0, 243, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* --- Typography Effects --- */
+        .hero-title {
+            /* Clean White Gradient */
+            background: linear-gradient(to bottom, #ffffff 0%, #e0e0e0 50%, #a0a0a0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            /* Radiant Glow for readability */
+            filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 50px rgba(0, 243, 255, 0.2));
+            position: relative;
+            z-index: 20;
+        }
+
+        .neon-text-blue {
+            color: #00f3ff;
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+        }
+
+        .neon-text-red {
+            color: #ff003c;
+            text-shadow: 0 0 10px rgba(255, 0, 60, 0.5);
+        }
+
+        /* --- 3D Embed Integration --- */
+        .sketchfab-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            /* Mask creates the seamless blend into the dark bg */
+            mask-image: linear-gradient(to bottom, black 60%, transparent 100%); 
+            -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+            pointer-events: none; /* Default no interaction on container */
+            overflow: hidden; /* Hide scaled iframe edges */
+        }
+        
+        .sketchfab-embed-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Specialized Iframe Classes */
+        .hero-iframe {
+            pointer-events: none; 
+            /* Scale up slightly to push UI elements off-screen, but reduced from 1.35 to 1.15 to zoom out */
+            transform: scale(1.15); 
+            transform-origin: center center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .tech-iframe {
+            pointer-events: auto; /* Enable interaction */
+            width: 100%;
+            height: 100%;
+            /* No scale */
+        }
+        
+        .flag-iframe {
+             pointer-events: none;
+             transform: scale(1.0); /* Reset scale to prevent cut-off */
+             width: 100%;
+             height: 100%;
+        }
+
+        /* --- Animation Utilities --- */
+        .animate-scanline {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 243, 255, 0.5);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.8);
+            animation: scan 3s linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        /* Heatmap Simulation Overlay */
+        .heatmap-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 0, 60, 0.2), rgba(0, 243, 255, 0.1), transparent 70%);
+            mix-blend-mode: color-dodge;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease;
+        }
+
+        .grid-bg {
+            background-size: 40px 40px;
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        }
+
+        /* Partner Slider Gradient Masks */
+        .slider-mask {
+            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        }
+
+        /* Logo Glow Effect */
+        .logo-glow {
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));
+        }
+    </style>
+</head>
+<body class="relative">
+
+    <!-- Three.js Canvas Layer (Fixed Background) -->
+    <canvas id="flowCanvas" class="fixed top-0 left-0 w-full h-full z-10 pointer-events-none"></canvas>
+    
+    <!-- Cinematic Noise Overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- HUD Overlay (Fixed Telemetry) -->
+    <div class="fixed top-0 left-0 w-full h-full pointer-events-none z-50 p-6 flex flex-col justify-between">
+        <!-- Top Bar -->
+        <div class="flex justify-between items-start">
+            <div class="glass-panel px-4 py-2 rounded-sm flex items-center gap-3">
+                <div class="w-2 h-2 bg-neonBlue rounded-full animate-pulse"></div>
+                <span class="font-display text-xs tracking-widest text-gray-400">SYS.ONLINE // V.4.0.2</span>
+            </div>
+            <div class="glass-panel px-4 py-2 rounded-sm text-right">
+                <div class="font-display text-xs tracking-widest text-gray-400">CFD SOLVER STATUS</div>
+                <div class="font-mono text-neonBlue text-sm" id="solver-fps">60.02 FPS</div>
+            </div>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="flex justify-between items-end">
+            <div class="font-mono text-[10px] text-gray-600 space-y-1">
+                <div>COORD: <span id="coord-x">12.004</span>, <span id="coord-y">-44.20</span></div>
+                <div>REYNOLDS: 4.2e6</div>
+            </div>
+            <div class="glass-panel px-4 py-2 rounded-sm border-l-2 border-neonRed">
+                <div class="font-display text-xs tracking-widest text-gray-400">ACTIVE SESSION</div>
+                <div class="font-mono text-white text-sm">PROJ_MCL_AERO_09</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 w-full z-50 flex justify-center py-6 pointer-events-none">
+        <div class="glass-panel rounded-full px-8 py-3 flex gap-8 pointer-events-auto items-center">
+            <a href="#hero" class="font-display font-bold text-xl tracking-tighter text-white">RA-FLow</a>
+            <div class="h-4 w-[1px] bg-gray-700"></div>
+            <a href="#platform" class="text-xs font-medium text-gray-400 hover:text-neonBlue transition-colors uppercase tracking-widest">Platform</a>
+            <a href="#technology" class="text-xs font-medium text-gray-400 hover:text-neonBlue transition-colors uppercase tracking-widest">Core</a>
+            <a href="#tires" class="text-xs font-medium text-gray-400 hover:text-neonBlue transition-colors uppercase tracking-widest">Dynamics</a>
+            <a href="#partners" class="text-xs font-medium text-gray-400 hover:text-neonBlue transition-colors uppercase tracking-widest">Trusted By</a>
+            <a href="#" class="bg-white text-black px-4 py-1 rounded-sm text-xs font-bold uppercase hover:bg-neonBlue hover:text-black transition-colors">Request Demo</a>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT SCROLL WRAPPER -->
+    <main class="relative">
+
+        <!-- SECTION 1: HERO -->
+        <section id="hero" class="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden">
+            <!-- 3D Car Embed (Mercedes Livery) -->
+            <div class="absolute inset-0 z-0 sketchfab-container">
+                <div class="sketchfab-embed-wrapper w-full h-full"> 
+                   <iframe title="F1 2022 Mercedes Livery" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/ebb3a3ddd04f4cbaa4ee6484bb0ecbdb/embed?autostart=1&transparent=1&ui_hint=0&ui_theme=dark&ui_infos=0&ui_controls=0&ui_stop=0&ui_watermark=0" class="hero-iframe"> </iframe> 
+                </div>
+            </div>
+            <!-- Typography Overlay -->
+            <div class="relative z-20 text-center mt-[15vh] pointer-events-none">
+                <div class="flex justify-center mb-4 overflow-hidden">
+                    <span class="inline-block px-3 py-1 border border-neonBlue/30 bg-neonBlue/5 text-neonBlue text-[10px] tracking-[0.3em] font-mono uppercase transform skew-x-[-10deg]">
+                        Aerodynamic Intelligence
+                    </span>
+                </div>
+                <!-- Radiant Glow Background for Readability -->
+                <div class="absolute inset-0 -z-10 bg-gradient-radial from-black/60 to-transparent opacity-80 blur-3xl transform scale-150"></div>
+                <h1 class="hero-title font-display font-bold text-[12vw] leading-[0.85] tracking-tighter uppercase">
+                    RA-FLow
+                </h1>
+                <p class="font-mono text-gray-400 mt-6 text-sm tracking-widest max-w-md mx-auto">
+                    COMPUTATIONAL FLUID DYNAMICS // REIMAGINED
+                </p>
+            </div>
+            <!-- Scroll Indicator -->
+            <div class="absolute bottom-12 flex flex-col items-center gap-2 opacity-50 animate-bounce z-20">
+                <span class="text-[10px] font-mono tracking-widest">INITIALIZE</span>
+                <div class="w-[1px] h-12 bg-gradient-to-b from-transparent via-white to-transparent"></div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: PLATFORM (Value Prop + Neural Mesh) -->
+        <section id="platform" class="relative w-full py-32 px-6 md:px-20 grid-bg border-t border-white/5 z-20 bg-obsidian/20 backdrop-blur-sm">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
+                    <!-- Text Content -->
+                    <div class="md:col-span-5 flex flex-col justify-center space-y-8">
+                        <h2 class="font-display text-4xl md:text-5xl font-bold leading-tight">
+                            Perform <span class="text-neonBlue">Detailed Flow Analysis</span><br>
+                            in seconds.
+                        </h2>
+                        <p class="text-gray-400 leading-relaxed font-light">
+                            Traditional wind tunnels are slow. Legacy CFD is expensive. RA-Flow utilizes proprietary machine learning models trained on nearly a 100 recorded Formula 1 Car dataset to predict aerodynamic loads and flow structures.
+                        </p>
+                        <div class="grid grid-cols-2 gap-4 mt-8">
+                            <div class="glass-card p-6 rounded-sm">
+                                <!-- Fixed text overflow by adjusting size -->
+                                <div class="text-neonBlue font-display text-xl md:text-2xl font-bold">Optimized</div>
+                                <div class="text-gray-500 text-xs uppercase tracking-wider mt-1">Solver Efficiency</div>
+                            </div>
+                            <div class="glass-card p-6 rounded-sm">
+                                <div class="text-white font-display text-xl md:text-2xl font-bold">High Fidelity</div>
+                                <div class="text-gray-500 text-xs uppercase tracking-wider mt-1">Data-Driven Precision</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Detailed Neural Mesh Visualization -->
+                    <div class="md:col-span-7 relative h-[500px] glass-panel rounded-lg overflow-hidden flex items-center justify-center group">
+                        <video src="https://external-preview.redd.it/zq_Z60HNTl4rZc0KV9grJmPc7oUT4sEi8m6tp20VMfA.gif?width=1200&format=mp4&s=a2887d1686d8648337d611483ab7cf7e9df4b095" autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-60 mix-blend-screen"></video>
+                        <div class="relative z-10 text-center pointer-events-none">
+                            <h3 class="font-mono text-neonBlue text-lg bg-black/50 px-4 py-1 backdrop-blur-sm border border-neonBlue/20">NEURAL MESH ACTIVE</h3>
+                            <p class="text-xs text-gray-500 mt-2">Processing Node 0x4F</p>
+                        </div>
+                        <div class="absolute top-4 left-4 w-2 h-2 border-t border-l border-neonBlue"></div>
+                        <div class="absolute top-4 right-4 w-2 h-2 border-t border-r border-neonBlue"></div>
+                        <div class="absolute bottom-4 left-4 w-2 h-2 border-b border-l border-neonBlue"></div>
+                        <div class="absolute bottom-4 right-4 w-2 h-2 border-b border-r border-neonBlue"></div>
+                        <div class="animate-scanline"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: TECHNOLOGY CORE (Mercedes W13) -->
+        <section id="technology" class="relative w-full py-24 flex flex-col items-center bg-gradient-to-b from-obsidian to-charcoal overflow-hidden z-20">
+            <div class="text-center mb-12 relative z-10">
+                <h2 class="font-display text-3xl md:text-6xl font-bold uppercase tracking-tight">Active Analysis</h2>
+                <div class="flex justify-center gap-4 mt-4 font-mono text-xs text-neonRed">
+                    <span>[ THERMAL MAPPING ]</span>
+                    <span>[ FLOW SEPARATION ]</span>
+                    <span>[ DRAG REDUCTION ]</span>
+                </div>
+            </div>
+            
+            <!-- Interactive Stage - FULL WIDTH EXPANSION -->
+            <div class="relative w-full h-[85vh] glass-panel border-y border-white/5 overflow-hidden shadow-2xl shadow-neonRed/5">
+                
+                <!-- Background Gradient for Depth -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10 pointer-events-none"></div>
+
+                <!-- Sketchfab Mercedes - Interaction ENABLED via tech-iframe class -->
+                <div class="sketchfab-embed-wrapper h-full w-full relative z-0"> 
+                    <iframe title="Mercedes W13 Concept F1" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/1a1f8d992a3f4e2185603c87a0087781/embed?autostart=1&ui_hint=0&ui_theme=dark&ui_infos=0&ui_controls=1&ui_stop=0&transparent=1" class="tech-iframe"> </iframe> 
+                </div>
+
+                <!-- Heatmap/Pressure Overlay (CSS Simulated) -->
+                <div class="heatmap-overlay" id="heatmap-layer"></div>
+
+                <!-- Floating Analysis Data Points - CONTAINED WITHIN MAX-WIDTH FOR PRECISION -->
+                <div class="absolute inset-0 w-full max-w-7xl mx-auto z-20 pointer-events-none">
+                    
+                    <!-- Point 1: Front Wing -->
+                    <div class="absolute top-[65%] left-[5%] md:left-[10%] pointer-events-none hidden md:block">
+                        <div class="flex items-center gap-4 group">
+                            <!-- Extended line for reach -->
+                            <div class="w-24 h-[1px] bg-white/50 origin-left"></div>
+                            <div class="glass-card p-3 rounded-sm border-l-2 border-neonBlue backdrop-blur-md">
+                                <div class="text-[10px] text-gray-400 uppercase">Front Wing Load</div>
+                                <div class="font-mono text-white text-lg">2.4 kN</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Point 2: Sidepod -->
+                    <div class="absolute top-[45%] right-[5%] md:right-[10%] pointer-events-none text-right hidden md:block">
+                        <div class="flex items-center gap-4 flex-row-reverse group">
+                            <!-- Extended line for reach -->
+                            <div class="w-24 h-[1px] bg-white/50 origin-right"></div>
+                            <div class="glass-card p-3 rounded-sm border-r-2 border-neonRed backdrop-blur-md">
+                                <div class="text-[10px] text-gray-400 uppercase">Cooling Intake</div>
+                                <div class="font-mono text-neonRed text-lg">HIGH PRESH</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="absolute bottom-12 left-0 w-full flex justify-center z-30 gap-4 pointer-events-auto">
+                    <button id="toggle-pressure" class="px-6 py-2 glass-panel hover:bg-neonRed/20 hover:border-neonRed transition-all text-xs font-bold uppercase tracking-widest text-white">
+                        Toggle Pressure Map
+                    </button>
+                    <button class="px-6 py-2 glass-panel hover:bg-neonBlue/20 hover:border-neonBlue transition-all text-xs font-bold uppercase tracking-widest text-white">
+                        Run Solver
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: TIRE AERO (Mercedes W03 Wheel) -->
+        <section id="tires" class="relative w-full min-h-screen flex flex-col md:flex-row bg-charcoal border-t border-white/5 z-20">
+            
+            <!-- 3D Wheel Model (Left Half - 50% Width, Full Height) -->
+            <div class="relative w-full md:w-1/2 min-h-[50vh] md:min-h-full order-2 md:order-1 border-r border-white/5 bg-black/20">
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent to-charcoal/80 z-10 pointer-events-none mix-blend-multiply"></div>
+                <!-- Autospin enabled -->
+                <div class="sketchfab-embed-wrapper w-full h-full absolute inset-0"> 
+                    <iframe title="Mercedes AMG F1 - W03 Wheel" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/7399e364302544b0b1c5caac7ce30cfa/embed?autospin=1&autostart=1&transparent=1&ui_theme=dark&ui_infos=0&ui_watermark=0&ui_controls=1" class="tech-iframe"> </iframe> 
+                </div>
+                <div class="absolute bottom-8 left-8 z-20">
+                        <div class="text-[10px] text-gray-500 font-mono">MODEL: W03_COMPOUND_SOFT</div>
+                        <div class="text-neonBlue text-xs font-bold uppercase">Rotating Frame Active</div>
+                </div>
+            </div>
+
+            <!-- Content (Right Half - 50% Width) -->
+            <div class="relative w-full md:w-1/2 flex items-center justify-center p-12 md:p-24 order-1 md:order-2">
+                <div class="max-w-xl">
+                    <div class="inline-block">
+                        <span class="text-neonRed font-mono text-xs tracking-widest uppercase mb-2 block">// ROTATIONAL DYNAMICS</span>
+                        <h2 class="font-display text-4xl md:text-5xl font-bold leading-tight text-white">
+                            Surface Drag & <br>Flow Management
+                        </h2>
+                    </div>
+                    <p class="text-gray-400 leading-relaxed font-light mt-8">
+                        Tire squirt and rotational flow instability account for over 40% of total vehicle drag. RA-Flow's unique sliding-mesh solver accurately predicts boundary layer separation on rotating surfaces, allowing for millimeter-perfect brake duct and floor edge optimization.
+                    </p>
+                    <div class="space-y-4 mt-8">
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-[1px] bg-neonBlue"></div>
+                            <span class="text-sm font-mono text-gray-300">ISO-THERMAL BRAKE MODELING</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-[1px] bg-neonBlue"></div>
+                            <span class="text-sm font-mono text-gray-300">RUBBER DEFORMATION ANALYSIS</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-8 h-[1px] bg-neonBlue"></div>
+                            <span class="text-sm font-mono text-gray-300">WET WEATHER DISPERSION</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: GLOBAL STANDARDS (Flag Asset) -->
+        <!-- Fixed Height Issue: Increased to h-screen and adjusted scale -->
+        <section id="global" class="relative w-full h-screen flex items-center justify-center overflow-hidden bg-obsidian z-20 border-t border-white/5">
+            <!-- Background Flag -->
+            <div class="absolute inset-0 opacity-40 sketchfab-container mix-blend-screen">
+                 <div class="sketchfab-embed-wrapper w-full h-full"> 
+                    <iframe title="Flag Sport Car Lamborghini" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/7bfa723e0cab45ad916370d02d77fa53/embed?autostart=1&transparent=1&ui_theme=dark&ui_infos=0&ui_controls=0&ui_stop=0&ui_watermark=0" class="flag-iframe"> </iframe> 
+                </div>
+            </div>
+            
+            <!-- Overlay Content -->
+            <div class="relative z-10 text-center px-4">
+                <div class="inline-flex items-center gap-3 border border-white/20 px-6 py-2 rounded-full backdrop-blur-md bg-black/30 mb-8">
+                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span class="text-xs font-mono text-white tracking-widest uppercase">Global FIA Certification</span>
+                </div>
+                <h2 class="font-display text-5xl md:text-8xl font-bold text-white tracking-tighter mb-4 mix-blend-overlay">
+                    THE GOLD STANDARD
+                </h2>
+            </div>
+        </section>
+
+        <!-- SECTION 6: PARTNER CAROUSEL -->
+        <section id="partners" class="relative w-full py-20 bg-black z-20 border-t border-white/5 overflow-hidden">
+            <div class="text-center mb-10">
+                <span class="text-gray-500 text-xs tracking-[0.2em] font-mono uppercase">Trusted by the fastest teams on Earth</span>
+            </div>
+            
+            <div class="relative w-full max-w-[100vw] slider-mask">
+                <div class="flex w-max animate-infinite-scroll hover:[animation-play-state:paused] items-center">
+                    
+                    <!-- Logo Set 1 -->
+                    <div class="flex items-center gap-24 px-12">
+                         <!-- Mercedes AMG -->
+                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
+                            <svg height="40" viewBox="0 0 100 100" fill="currentColor" class="text-white">
+                                <path d="M50 0a50 50 0 100 100A50 50 0 0050 0zm0 92a42 42 0 110-84 42 42 0 010 84zM50 8l-8 32-30-5 27 20-13 29 24-18 24 18-13-29 27-20-30 5z" fill-opacity="0.2"/>
+                                <text x="50" y="65" font-family="sans-serif" font-weight="bold" font-size="12" text-anchor="middle" fill="white">MERCEDES-AMG</text>
+                            </svg>
+                         </div>
+                         <!-- McLaren -->
+                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
+                             <svg height="30" viewBox="0 0 200 40" fill="currentColor" class="text-white">
+                                 <path d="M180 0c-10 0-20 10-20 20s10 20 20 20 20-10 20-20-10-20-20-20z" fill-opacity="0"/>
+                                 <text x="100" y="30" font-family="sans-serif" font-weight="900" font-size="28" text-anchor="middle" fill="white" style="letter-spacing: 2px;">McLAREN</text>
+                             </svg>
+                         </div>
+                         <!-- Red Bull -->
+                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
+                             <svg height="35" viewBox="0 0 200 40" fill="currentColor" class="text-white">
+                                 <text x="100" y="30" font-family="sans-serif" font-weight="900" font-size="24" text-anchor="middle" fill="white" style="letter-spacing: 1px;">ORACLE RED BULL</text>
+                             </svg>
+                         </div>
+                         <!-- SpaceX -->
+                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
+                             <svg height="30" viewBox="0 0 200 40" fill="currentColor" class="text-white">
+                                 <text x="100" y="30" font-family="sans-serif" font-weight="bold" font-size="26" text-anchor="middle" fill="white" style="letter-spacing: 4px;">SpaceX</text>
+                             </svg>
+                         </div>
+                         <!-- Lockheed -->
+                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
+                             <svg height="30" viewBox="0 0 200 40" fill="currentColor" class="text-white">
+                                 <text x="100" y="30" font-family="sans-serif" font-weight="bold" font-size="22" text-anchor="middle" fill="white" style="letter-spacing: 1px;">LOCKHEED MARTIN</text>
+                             </svg>
+                         </div>
+                         <!-- Aston Martin -->
+                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
+                             <svg height="35" viewBox="0 0 200 40" fill="currentColor" class="text-white">
+                                 <text x="100" y="30" font-family="sans-serif" font-weight="bold" font-size="20" text-anchor="middle" fill="white" style="letter-spacing: 2px;">ASTON MARTIN</text>
+                             </svg>
+                         </div>
+                    </div>
+
+                    <!-- Logo Set 2 (Duplicate for Loop) -->
+                    <div class="flex items-center gap-24 px-12">
+                         <!-- Mercedes AMG -->
+                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
+                            <svg height="40" viewBox="0 0 100 100" fill="currentColor" class="text-white">
+                                <path d="M50 0a50 50 0 100 100A50 50 0 0050 0zm0 92a42 42 0 110-84 42 42 0 010 84zM50 8l-8 32-30-5 27 20-13 29 24-18 24 18-13-29 27-20-30 5z" fill-opacity="0.2"/>
+                                <text x="50" y="65" font-family="sans-serif" font-weight="bold" font-size="12" text-anchor="middle" fill="white">MERCEDES-AMG</text>
+                            </svg>
+                         </div>
+                         <!-- McLaren -->
+                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
+                             <svg height="30" viewBox="0 0 200 40" fill="currentColor" class="text-white">
+                                 <path d="M180 0c-10 0-20 10-20 20s10 20 20 20 20-10 20-20-10-20-20-20z" fill-opacity="0"/>
+                                 <text x="100" y="30" font-family="sans-serif" font-weight="900" font-size="28" text-anchor="middle" fill="white" style="letter-spacing: 2px;">McLAREN</text>
+                             </svg>
+                         </div>
+                         <!-- Red Bull -->
+                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
+                             <svg height="35" viewBox="0 0 200 40" fill="currentColor" class="text-white">
+                                 <text x="100" y="30" font-family="sans-serif" font-weight="900" font-size="24" text-anchor="middle" fill="white" style="letter-spacing: 1px;">ORACLE RED BULL</text>
+                             </svg>
+                         </div>
+                         <!-- SpaceX -->
+                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
+                             <svg height="30" viewBox="0 0 200 40" fill="currentColor" class="text-white">
+                                 <text x="100" y="30" font-family="sans-serif" font-weight="bold" font-size="26" text-anchor="middle" fill="white" style="letter-spacing: 4px;">SpaceX</text>
+                             </svg>
+                         </div>
+                         <!-- Lockheed -->
+                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
+                             <svg height="30" viewBox="0 0 200 40" fill="currentColor" class="text-white">
+                                 <text x="100" y="30" font-family="sans-serif" font-weight="bold" font-size="22" text-anchor="middle" fill="white" style="letter-spacing: 1px;">LOCKHEED MARTIN</text>
+                             </svg>
+                         </div>
+                         <!-- Aston Martin -->
+                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
+                             <svg height="35" viewBox="0 0 200 40" fill="currentColor" class="text-white">
+                                 <text x="100" y="30" font-family="sans-serif" font-weight="bold" font-size="20" text-anchor="middle" fill="white" style="letter-spacing: 2px;">ASTON MARTIN</text>
+                             </svg>
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 7: FOOTER / CTA -->
+        <section id="footer" class="relative w-full py-40 flex flex-col items-center justify-center bg-obsidian border-t border-gray-900 z-20">
+            <h2 class="font-display text-5xl md:text-7xl font-bold text-center mb-8">
+                Ready to <span class="text-transparent bg-clip-text bg-gradient-to-r from-neonBlue to-white">Fly?</span>
+            </h2>
+            <p class="text-gray-400 max-w-xl text-center mb-12 font-light">
+                Join the engineering elite who trust RA-Flow for critical aerodynamic computation.
+            </p>
+            <button class="group relative px-8 py-4 bg-white text-black font-bold uppercase tracking-widest text-sm overflow-hidden transition-all hover:scale-105">
+                <div class="absolute inset-0 w-0 bg-neonBlue transition-all duration-[250ms] ease-out group-hover:w-full opacity-20"></div>
+                <span class="relative">Start Enterprise Trial</span>
+            </button>
+
+            <footer class="absolute bottom-6 w-full text-center">
+                <p class="text-[10px] text-gray-700 font-mono">© 2024 RA-FLow SYSTEMS INC. ALL RIGHTS RESERVED.</p>
+            </footer>
+        </section>
+
+    </main>
+
+    <!-- LOGIC -->
+    <script>
+        // --- 1. THREE.JS BACKGROUND SYSTEM (Wind Tunnel Flow: Left -> Right) ---
+        const initThreeJS = () => {
+            const canvas = document.getElementById('flowCanvas');
+            const scene = new THREE.Scene();
+            
+            // Camera setup
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 100;
+
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // Create Streamlines (Horizontal flow)
+            const geometry = new THREE.BufferGeometry();
+            const count = 800; // REDUCED COUNT (was 4000)
+            const positions = new Float32Array(count * 3);
+            const speeds = new Float32Array(count); 
+
+            // Initialize particles randomly across a wide X/Y/Z volume
+            for (let i = 0; i < count * 3; i += 3) {
+                // X: Spread wide to allow continuous flow
+                positions[i] = (Math.random() - 0.5) * 600; 
+                // Y: Full screen height spread - TIGHTER SPREAD for center focus
+                positions[i + 1] = (Math.random() - 0.5) * 200; 
+                // Z: Depth spread
+                positions[i + 2] = (Math.random() - 0.5) * 200; 
+                
+                // Random speeds for flow variation
+                speeds[i/3] = Math.random() * 2 + 1; // Faster speed for wind tunnel look
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            
+            // Material: Glowing Cyan/Blue Lines
+            const material = new THREE.PointsMaterial({
+                color: 0x00f3ff,
+                size: 0.6, // REDUCED SIZE (was 1.2)
+                transparent: true,
+                opacity: 0.25, // REDUCED OPACITY (was 0.6)
+                blending: THREE.AdditiveBlending
+            });
+
+            const particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+
+            // Animation Loop
+            let scrollFactor = 0;
+            let targetScrollFactor = 0;
+
+            const animate = () => {
+                requestAnimationFrame(animate);
+
+                // Lerp scroll factor
+                scrollFactor += (targetScrollFactor - scrollFactor) * 0.1;
+
+                const positions = particles.geometry.attributes.position.array;
+                const boundary = 300; // Reset point on right side
+
+                for (let i = 0; i < count; i++) {
+                    // Update X position (Left -> Right flow)
+                    // Base speed + scroll boost
+                    const speed = speeds[i] + (scrollFactor * 2); 
+                    
+                    positions[i * 3] += speed;
+
+                    // Reset if moves past right boundary
+                    if (positions[i * 3] > boundary) {
+                        positions[i * 3] = -boundary; // Send back to left
+                        // Randomize Y and Z slightly on reset for organic feel
+                        positions[i * 3 + 1] = (Math.random() - 0.5) * 200; // Match tighter spread
+                        positions[i * 3 + 2] = (Math.random() - 0.5) * 200;
+                    }
+                }
+                
+                particles.geometry.attributes.position.needsUpdate = true;
+                
+                // Subtle camera movement based on mouse
+                camera.position.x += (mouseX * 10 - camera.position.x) * 0.05;
+                camera.position.y += (-mouseY * 10 - camera.position.y) * 0.05;
+                camera.lookAt(scene.position);
+
+                renderer.render(scene, camera);
+            };
+
+            animate();
+
+            // Handle Resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            // Integrate with Scroll for speed boost
+            window.addEventListener('scroll', () => {
+                targetScrollFactor = 3.0; // Boost speed on scroll
+                clearTimeout(window.scrollTimeout);
+                window.scrollTimeout = setTimeout(() => {
+                    targetScrollFactor = 0; // Return to normal speed
+                }, 100);
+            });
+        };
+
+        // --- 2. INPUT TRACKING ---
+        let mouseX = 0;
+        let mouseY = 0;
+        window.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        // --- 3. GSAP ANIMATIONS ---
+        const initGSAP = () => {
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Hero Text Parallax
+            gsap.to(".hero-title", {
+                scrollTrigger: {
+                    trigger: "body",
+                    start: "top top",
+                    end: "bottom top",
+                    scrub: 1
+                },
+                y: 200,
+                opacity: 0
+            });
+
+            // HUD Data Randomizer
+            setInterval(() => {
+                document.getElementById('solver-fps').innerText = (55 + Math.random() * 10).toFixed(2) + " FPS";
+                document.getElementById('coord-x').innerText = (Math.random() * 100).toFixed(3);
+                document.getElementById('coord-y').innerText = (Math.random() * -100).toFixed(2);
+            }, 200);
+
+            // Simulation Section Reveal
+            gsap.from("#heatmap-layer", {
+                scrollTrigger: {
+                    trigger: ".sketchfab-embed-wrapper",
+                    start: "top center",
+                    toggleActions: "play none none reverse"
+                },
+                opacity: 0,
+                duration: 1
+            });
+        };
+
+        // --- 5. UI INTERACTION ---
+        const initUI = () => {
+            const toggleBtn = document.getElementById('toggle-pressure');
+            const heatmapLayer = document.getElementById('heatmap-layer');
+            let active = false;
+            
+            if(toggleBtn && heatmapLayer) {
+                toggleBtn.addEventListener('click', () => {
+                    active = !active;
+                    heatmapLayer.style.opacity = active ? '0.8' : '0';
+                    toggleBtn.innerText = active ? 'DISABLE PRESSURE MAP' : 'ENABLE PRESSURE MAP';
+                    toggleBtn.classList.toggle('bg-neonRed', active);
+                    toggleBtn.classList.toggle('border-neonRed', active);
+                });
+            }
+        };
+
+        // Initialize Everything
+        window.addEventListener('DOMContentLoaded', () => {
+            initThreeJS();
+            initGSAP();
+            // initNeuralMesh(); Removed unused neural mesh initialization
+            initUI();
+        });
+
+    </script>
+</body>
+</html>
