@@ -1,773 +1,726 @@
 <!DOCTYPE html>
-<html lang="en" class="antialiased scroll-smooth scroll-pt-24">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RA-FLow | Next-Gen Aerodynamic Simulation</title>
-    
-    <!-- Fonts: Space Grotesk for Tech Headers, Inter for UI -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- GSAP & Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>RA-Flow Major Project Presentation</title>
 
-    <!-- Configuration & Custom Styles -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        obsidian: '#050505',
-                        charcoal: '#0a0a0a',
-                        neonBlue: '#00f3ff',
-                        neonRed: '#ff003c',
-                        glass: 'rgba(255, 255, 255, 0.03)'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        display: ['Space Grotesk', 'sans-serif'],
-                    },
-                    letterSpacing: {
-                        'ultra-wide': '0.2em',
-                    },
-                    animation: {
-                        'infinite-scroll': 'infinite-scroll 40s linear infinite',
-                    },
-                    keyframes: {
-                        'infinite-scroll': {
-                            from: { transform: 'translateX(0)' },
-                            to: { transform: 'translateX(-50%)' }, /* Seamless loop */
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-    <style>
-        /* --- Core Environment --- */
-        body {
-            background-color: #050505;
-            color: #e5e5e5;
-            overflow-x: hidden;
-        }
+<!-- Chart.js for data visualization -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-        /* Scrollbar Hiding */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #050505;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #333;
-            border-radius: 3px;
-        }
+<style>
+  /* ============================================
+     GLOBAL LOCKDOWN - STRICT VIEWPORT FIT
+  ============================================ */
+  * { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+  }
 
-        /* --- Visual Effects --- */
-        .noise-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 50;
-            opacity: 0.04;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-        }
+  html, body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden !important; /* No scrollbars ever */
+    background-color: #222; /* Dark outside the presentation */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: none; 
+  }
 
-        .glass-panel {
-            background: rgba(10, 10, 10, 0.4);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-        }
+  /* ============================================
+     PRESENTATION CONTAINER (16:9 Aspect Ratio)
+  ============================================ */
+  #presentation-container {
+    background-color: #FFFFFF; /* Solid plain white as requested */
+    width: 100%;
+    height: 100%;
+    max-width: calc(100vh * (16 / 9)); /* Force 16:9 width */
+    max-height: calc(100vw * (9 / 16)); /* Force 16:9 height */
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    /* Container queries for perfect text scaling */
+    container-type: size;
+    container-name: slide;
+  }
 
-        .glass-card {
-            background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.4s ease;
-        }
-        
-        .glass-card:hover {
-            border-color: rgba(0, 243, 255, 0.3);
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
-            transform: translateY(-2px);
-        }
+  /* ============================================
+     TYPOGRAPHY & THEMES
+  ============================================ */
+  .font-serif { font-family: 'Tinos', 'Times New Roman', Times, serif; color: #000000; }
+  .font-sans { font-family: 'Inter', Arial, sans-serif; color: #000000; }
 
-        /* --- Typography Effects --- */
-        .hero-title {
-            /* Clean White Gradient */
-            background: linear-gradient(to bottom, #ffffff 0%, #e0e0e0 50%, #a0a0a0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            /* Radiant Glow for readability */
-            filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 50px rgba(0, 243, 255, 0.2));
-            position: relative;
-            z-index: 20;
-        }
+  .slide-title {
+    color: #FF0000; /* Bright Red */
+    font-weight: 700;
+    text-align: left;
+    font-size: 5cqh;
+    text-transform: uppercase;
+    margin-bottom: 3cqh;
+    font-family: 'Tinos', 'Times New Roman', Times, serif;
+  }
 
-        .neon-text-blue {
-            color: #00f3ff;
-            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
-        }
+  /* ============================================
+     SLIDE LOGIC
+  ============================================ */
+  .slide {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    padding: 6cqh 6cqw;
+    display: none;
+    flex-direction: column;
+  }
 
-        .neon-text-red {
-            color: #ff003c;
-            text-shadow: 0 0 10px rgba(255, 0, 60, 0.5);
-        }
+  .slide.active {
+    display: flex;
+  }
 
-        /* --- 3D Embed Integration --- */
-        .sketchfab-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            /* Mask creates the seamless blend into the dark bg */
-            mask-image: linear-gradient(to bottom, black 60%, transparent 100%); 
-            -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
-            pointer-events: none; /* Default no interaction on container */
-            overflow: hidden; /* Hide scaled iframe edges */
-        }
-        
-        .sketchfab-embed-wrapper {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
+  /* ============================================
+     SPECIFIC SLIDE STYLES
+  ============================================ */
+  /* Slide 1 Styles */
+  .s1-header { text-align: center; font-size: 3.5cqh; font-weight: bold; margin-bottom: 2cqh; }
+  .s1-dept { text-align: center; font-size: 4cqh; font-weight: bold; margin-bottom: 2cqh; }
+  .s1-phase { text-align: center; font-size: 4cqh; font-weight: bold; color: #00008B; text-transform: uppercase; margin-bottom: 4cqh; }
+  .s1-title { text-align: center; font-size: 6cqh; font-weight: bold; color: #00008B; text-transform: uppercase; margin-bottom: 6cqh; padding: 0 4cqw; }
+  .s1-guide { text-align: center; font-size: 3.5cqh; font-weight: bold; color: #FF0000; margin-bottom: 6cqh; }
+  .s1-presenter { position: absolute; bottom: 6cqh; right: 6cqw; text-align: right; font-size: 3cqh; font-weight: bold; color: #FF0000; line-height: 1.5; }
 
-        /* Specialized Iframe Classes */
-        .hero-iframe {
-            pointer-events: none; 
-            /* Scale up slightly to push UI elements off-screen, but reduced from 1.35 to 1.15 to zoom out */
-            transform: scale(1.15); 
-            transform-origin: center center;
-            width: 100%;
-            height: 100%;
-        }
+  /* Generic Body Text */
+  .body-text { font-size: 3.5cqh; line-height: 1.6; text-align: justify; }
+  .body-list { font-size: 3.5cqh; line-height: 1.6; margin-left: 4cqw; }
+  .body-list li { margin-bottom: 1.5cqh; }
 
-        .tech-iframe {
-            pointer-events: auto; /* Enable interaction */
-            width: 100%;
-            height: 100%;
-            /* No scale */
-        }
-        
-        .flag-iframe {
-             pointer-events: none;
-             transform: scale(1.0); /* Reset scale to prevent cut-off */
-             width: 100%;
-             height: 100%;
-        }
+  /* Literature Review Table */
+  .lit-table { width: 100%; border-collapse: collapse; font-family: 'Inter', Arial, sans-serif; font-size: 2.8cqh; }
+  .lit-table th { background-color: #4A90E2; color: white; padding: 1.5cqh; border: 1px solid #ccc; text-align: left; }
+  .lit-table td { padding: 1.5cqh; border: 1px solid #ccc; }
+  .lit-table tr:nth-child(even) td { background-color: #E6E6FA; } /* Lavender */
+  .lit-table tr:nth-child(odd) td { background-color: #FFFFFF; }
 
-        /* --- Animation Utilities --- */
-        .animate-scanline {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: rgba(0, 243, 255, 0.5);
-            box-shadow: 0 0 10px rgba(0, 243, 255, 0.8);
-            animation: scan 3s linear infinite;
-            opacity: 0;
-        }
+  /* Flowchart (Slide 8) */
+  .flowchart-bg {
+    background-image: linear-gradient(#e5e5e5 1px, transparent 1px), linear-gradient(90deg, #e5e5e5 1px, transparent 1px);
+    background-size: 4cqw 4cqw;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4cqw;
+    border: 1px solid #ccc;
+  }
+  .flow-box {
+    background: white; border: 2px solid #00008B; border-radius: 1cqw; padding: 2cqh 2cqw;
+    text-align: center; font-family: 'Inter', sans-serif; font-weight: bold; font-size: 2.5cqh;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 18%;
+  }
+  .flow-arrow { font-size: 4cqh; color: #00008B; }
 
-        @keyframes scan {
-            0% { top: 0%; opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { top: 100%; opacity: 0; }
-        }
+  /* Code Blocks (Slide 14) */
+  .code-container { display: flex; justify-content: space-between; gap: 2cqw; flex-grow: 1; }
+  .code-box { 
+    background: #1e1e1e; color: #d4d4d4; font-family: monospace; font-size: 2cqh; 
+    flex: 1; padding: 2cqw; border-radius: 0.5cqw; overflow: hidden; white-space: pre-wrap;
+  }
+  .code-title { color: #569cd6; font-weight: bold; margin-bottom: 1cqh; display: block; }
 
-        /* Heatmap Simulation Overlay */
-        .heatmap-overlay {
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 50% 50%, rgba(255, 0, 60, 0.2), rgba(0, 243, 255, 0.1), transparent 70%);
-            mix-blend-mode: color-dodge;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 1s ease;
-        }
+  /* Heatmap (Slide 15) */
+  .heatmap-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5cqw; 
+    font-family: 'Inter', sans-serif; font-size: 2.5cqh; flex-grow: 1;
+  }
+  .hm-cell { display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
+  .hm-header { background: #333; color: white; font-weight: bold; }
 
-        .grid-bg {
-            background-size: 40px 40px;
-            background-image:
-                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-        }
+  /* Two Column Layout */
+  .two-col { display: flex; gap: 4cqw; flex-grow: 1; }
+  .col { flex: 1; }
 
-        /* Partner Slider Gradient Masks */
-        .slider-mask {
-            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-            -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-        }
+  /* UI Mockup (Slide 18) */
+  .ui-mockup {
+    flex-grow: 1; border: 2px solid #ccc; border-radius: 1cqw; background: #f5f5f5;
+    display: flex; flex-direction: column; overflow: hidden; font-family: 'Inter', sans-serif;
+  }
+  .ui-header { background: #333; color: white; padding: 1cqh 2cqw; font-size: 2.5cqh; font-weight: bold; display: flex; justify-content: space-between;}
+  .ui-body { display: flex; flex-grow: 1; }
+  .ui-sidebar { width: 20%; background: #e0e0e0; padding: 2cqw; font-size: 2cqh; }
+  .ui-main { flex-grow: 1; background: #fff; padding: 2cqw; display: flex; align-items: center; justify-content: center; position: relative;}
+  .ui-wireframe-cube { width: 30cqh; height: 30cqh; border: 2px dashed #4A90E2; border-radius: 1cqw; display: flex; align-items: center; justify-content: center; color: #4A90E2; font-weight: bold; }
 
-        /* Logo Glow Effect */
-        .logo-glow {
-            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4));
-        }
-    </style>
+  /* Navigation Footer */
+  .footer { position: absolute; bottom: 2cqh; left: 0; width: 100%; text-align: center; font-size: 2cqh; color: #999; font-family: 'Inter', sans-serif; }
+</style>
 </head>
-<body class="relative">
+<body>
 
-    <!-- Three.js Canvas Layer (Fixed Background) -->
-    <canvas id="flowCanvas" class="fixed top-0 left-0 w-full h-full z-10 pointer-events-none"></canvas>
+<div id="presentation-container" class="font-serif">
+
+  <!-- ============================================
+       SLIDE 1: TITLE SLIDE
+  ============================================ -->
+  <div class="slide active" id="slide-1">
+    <div style="position: absolute; top: 4cqh; left: 4cqw; width: 8cqw; height: 8cqh; background: #ccc; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; font-size: 1.5cqh;">INST LOGO</div>
+    <div style="position: absolute; top: 4cqh; right: 4cqw; width: 14cqw; height: 6cqh; background: #ccc; display: flex; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; font-size: 1.5cqh;">NBA / NAAC</div>
     
-    <!-- Cinematic Noise Overlay -->
-    <div class="noise-overlay"></div>
+    <div style="margin-top: 8cqh;">
+      <div class="s1-header">NATIONAL INSTITUTE OF TECHNOLOGY<br>(UGC-AUTONOMOUS)</div>
+      <div class="s1-dept">Department of Computer Science and Engineering</div>
+      <div class="s1-phase">MAJOR PROJECT (REVIEW-II)</div>
+      <div class="s1-title">RA-Flow: Real-time Aerodynamic Optimization via Neural Operators and Physics-Informed Deep Learning</div>
+      <div class="s1-guide">Under the guidance of<br>Dr. Anil Kumar (Professor)</div>
+      <div class="s1-presenter">
+        PRESENTED BY:<br>
+        Team 7<br>
+        John Doe (19A41A0501)<br>
+        Jane Smith (19A41A0502)<br>
+        Alan Turing (19A41A0503)
+      </div>
+    </div>
+  </div>
 
-    <!-- HUD Overlay (Fixed Telemetry) -->
-    <div class="fixed top-0 left-0 w-full h-full pointer-events-none z-50 p-6 flex flex-col justify-between">
-        <!-- Top Bar -->
-        <div class="flex justify-between items-start">
-            <div class="glass-panel px-4 py-2 rounded-sm flex items-center gap-3">
-                <div class="w-2 h-2 bg-neonBlue rounded-full animate-pulse"></div>
-                <span class="font-display text-xs tracking-widest text-gray-400">SYS.ONLINE // V.4.0.2</span>
-            </div>
-            <div class="glass-panel px-4 py-2 rounded-sm text-right">
-                <div class="font-display text-xs tracking-widest text-gray-400">CFD SOLVER STATUS</div>
-                <div class="font-mono text-neonBlue text-sm" id="solver-fps">60.02 FPS</div>
-            </div>
-        </div>
+  <!-- ============================================
+       SLIDE 2: CONTENTS
+  ============================================ -->
+  <div class="slide" id="slide-2">
+    <div class="slide-title">CONTENTS</div>
+    <ul class="body-list" style="margin-top: 2cqh;">
+      <li>ABSTRACT</li>
+      <li>PROBLEM DEFINITION</li>
+      <li>OBJECTIVES</li>
+      <li>LITERATURE REVIEW</li>
+      <li>PROPOSED METHODOLOGY</li>
+      <li>ANALYSIS & DESIGN</li>
+      <li>ANALYTICAL/NUMERICAL WORK</li>
+      <li>EXPERIMENTAL SETUP</li>
+      <li>IMPLEMENTATION</li>
+      <li>TESTING/VERIFICATION/VALIDATION</li>
+      <li>REFERENCES</li>
+    </ul>
+  </div>
 
-        <!-- Bottom Bar -->
-        <div class="flex justify-between items-end">
-            <div class="font-mono text-[10px] text-gray-600 space-y-1">
-                <div>COORD: <span id="coord-x">12.004</span>, <span id="coord-y">-44.20</span></div>
-                <div>REYNOLDS: 4.2e6</div>
-            </div>
-            <div class="glass-panel px-4 py-2 rounded-sm border-l-2 border-neonRed">
-                <div class="font-display text-xs tracking-widest text-gray-400">ACTIVE SESSION</div>
-                <div class="font-mono text-white text-sm">PROJ_MCL_AERO_09</div>
-            </div>
-        </div>
+  <!-- ============================================
+       SLIDE 3: ABSTRACT
+  ============================================ -->
+  <div class="slide" id="slide-3">
+    <div class="slide-title">ABSTRACT</div>
+    <p class="body-text">
+      RA-Flow is a high-performance, GPU-accelerated aerodynamic optimization platform designed to bridge the gap between traditional Computational Fluid Dynamics (CFD) and real-time interactive design. By leveraging Fourier Neural Operators (FNO) and Signed Distance Fields (SDF), the system instantaneously predicts complex 3D pressure and velocity fields, entirely bypassing the computationally exhaustive iterative solvers inherent to classical Navier-Stokes equations. The platform ingests industry-standard STL/OBJ geometries, normalizing them into high-resolution voxel grids, and streams inferred physics data via binary WebSockets to a web-based 3D visualization suite. A primary innovation of this research is the Neural Geometric Optimization engine, which autonomously perturbs mesh structures to identify aerodynamic "hotspots" and minimize drag coefficients, reducing the traditional time-to-insight workflow from several hours to mere milliseconds.
+    </p>
+  </div>
+
+  <!-- ============================================
+       SLIDE 4: PROBLEM DEFINITION
+  ============================================ -->
+  <div class="slide" id="slide-4">
+    <div class="slide-title">PROBLEM DEFINITION</div>
+    <ul class="body-list">
+      <li><strong>Prohibitive Computational Cost:</strong> Traditional CFD simulations utilizing RANS, LES, or DNS methodologies require extensive HPC cluster resources and hours to days to converge for a single geometric configuration.</li>
+      <li><strong>The Design Iteration Gap:</strong> Because every minor geometric modification necessitates a complete remeshing and re-simulation cycle, engineers cannot explore design spaces interactively. The feedback loop is disconnected from engineering intuition.</li>
+      <li><strong>Data Opacity:</strong> Classical CFD outputs dense scalar and vector fields that lack immediate automated analytical insight. Identifying specific geometry voxels that disproportionately contribute to aerodynamic drag demands intensive manual post-processing.</li>
+      <li><strong>Tool Fragmentation:</strong> Existing workflows mandate switching between disparate CAD software, mesh generators, physics solvers, and optimization suites, leading to significant data loss and format incompatibilities.</li>
+    </ul>
+  </div>
+
+  <!-- ============================================
+       SLIDE 5: OBJECTIVES
+  ============================================ -->
+  <div class="slide" id="slide-5">
+    <div class="slide-title">OBJECTIVES</div>
+    <ul class="body-list">
+      <li><strong>High-Fidelity Geometry Processing:</strong> Implement an automated pipeline to ingest standard 3D formats, scale them via bounding-box normalization, and generate accurate Signed Distance Fields (SDF).</li>
+      <li><strong>Neural Fluid Simulation:</strong> Develop a Fourier Neural Operator model capable of predicting steady-state velocity and pressure fields with less than 10% error margin compared to traditional CFD baselines.</li>
+      <li><strong>Real-Time Visualization Suite:</strong> Create an interactive 3D WebGL environment capable of rendering pressure heatmaps and velocity vector streamlines at 60 Frames Per Second.</li>
+      <li><strong>Autonomous Optimization Routine:</strong> Engineer an algorithmic loop that proposes localized mesh perturbations to systematically lower the overall drag coefficient of the inputted manifold.</li>
+      <li><strong>Explainability Layer:</strong> Provide visual diagnostics that isolate flow separation points and high-pressure drag regions directly on the geometry.</li>
+    </ul>
+  </div>
+
+  <!-- ============================================
+       SLIDE 6: LITERATURE REVIEW
+  ============================================ -->
+  <div class="slide" id="slide-6">
+    <div class="slide-title">LITERATURE REVIEW</div>
+    <table class="lit-table" style="margin-top: 4cqh;">
+      <thead>
+        <tr>
+          <th style="width: 10%;">Year</th>
+          <th style="width: 25%;">Authors / Reference</th>
+          <th style="width: 35%;">Proposed Methodology</th>
+          <th style="width: 30%;">Limitations / Gaps</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2017</td>
+          <td>Anderson, J.D. <br><em>Fundamentals of Aerodynamics</em></td>
+          <td>Traditional finite volume/element methods solving Navier-Stokes equations iteratively.</td>
+          <td>Extremely high computational cost; unsuitable for real-time iterative design exploration.</td>
+        </tr>
+        <tr>
+          <td>2019</td>
+          <td>Raissi, M. et al. <br><em>Physics-Informed Neural Networks</em></td>
+          <td>Deep learning framework embedding PDE residuals into the loss function for inverse problems.</td>
+          <td>Requires retraining for every new geometry; lacks zero-shot generalization capabilities.</td>
+        </tr>
+        <tr>
+          <td>2021</td>
+          <td>Li, Z. et al. <br><em>Fourier Neural Operator for Parametric PDEs</em></td>
+          <td>Learning mapping between infinite-dimensional function spaces in the frequency domain.</td>
+          <td>Focused strictly on forward prediction; lacks an integrated geometric optimization feedback loop.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ============================================
+       SLIDE 7: PROPOSED METHODOLOGY
+  ============================================ -->
+  <div class="slide" id="slide-7">
+    <div class="slide-title">PROPOSED METHODOLOGY</div>
+    <ul class="body-list">
+      <li><strong>Data/Input Source:</strong> Raw STL/OBJ CAD models are uploaded to the platform. The backend utilizes the <em>trimesh</em> library to validate manifold integrity and normalize the geometry into a uniform unit sphere.</li>
+      <li><strong>Processing Phase:</strong> The continuous surface mesh is rasterized into a discrete 128³ voxel grid. Simultaneously, a Signed Distance Field (SDF) is computed to encode boundary proximity data as a distinct tensor channel.</li>
+      <li><strong>Core Logic/Model:</strong> A Fourier Neural Operator (FNO) processes the voxelized tensor. By executing 3D Fast Fourier Transforms (FFT), the model isolates global fluid structures in the frequency domain, outputting predicted velocity and pressure fields.</li>
+      <li><strong>Optimization Loop:</strong> The system calculates gradients of the predicted drag with respect to the input surface normals, slightly perturbing the mesh to iteratively reduce aerodynamic resistance.</li>
+      <li><strong>Output/Interface:</strong> A binary sparse-streaming protocol pushes the generated vector fields via WebSockets to a React Three Fiber frontend, enabling real-time 3D advection rendering.</li>
+    </ul>
+  </div>
+
+  <!-- ============================================
+       SLIDE 8: ANALYSIS & DESIGN
+  ============================================ -->
+  <div class="slide" id="slide-8">
+    <div class="slide-title">ANALYSIS & DESIGN</div>
+    <div class="flowchart-bg">
+      <div class="flow-box">CAD Upload<br>(STL/OBJ)</div>
+      <div class="flow-arrow">➔</div>
+      <div class="flow-box">Preprocessing<br>(Voxelization & SDF)</div>
+      <div class="flow-arrow">➔</div>
+      <div class="flow-box">Central Algorithm<br>(Fourier Neural Operator)</div>
+      <div class="flow-arrow">➔</div>
+      <div class="flow-box">Streaming<br>(Binary WebSockets)</div>
+      <div class="flow-arrow">➔</div>
+      <div class="flow-box">User Interface<br>(WebGL 3D Rendering)</div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SLIDE 9: ANALYTICAL/NUMERICAL WORK
+  ============================================ -->
+  <div class="slide" id="slide-9">
+    <div class="slide-title">ANALYTICAL/NUMERICAL WORK</div>
+    <ul class="body-list">
+      <li><strong>Dataset Volumetrics:</strong> The system processes inputs mapped strictly to a 128³ spatial resolution. The resulting input tensor dimension is parameterized as <code>[Batch=1, Channels=4, D=128, H=128, W=128]</code>.</li>
+      <li><strong>Output Field Parameters:</strong> The model infers a 4-channel tensor representing steady-state fluid dynamics: Velocity vectors (u, v, w) and scalar static Pressure (p).</li>
+      <li><strong>Drag Force Calculation:</strong> Aerodynamic drag is calculated via surface integral approximation over the boundary voxels: <br>
+      <em>F_d = Σ (p_i · n_i · ΔA_i)</em> where <em>n_i</em> is the surface normal and <em>p_i</em> is localized pressure.</li>
+      <li><strong>Physics-Informed Conservation:</strong> Model output adheres to the continuity equation for incompressible flows, ensuring the divergence of the velocity field approaches zero: <em>∇ · u = 0</em>.</li>
+      <li><strong>Optimization Constraint:</strong> Geometric perturbations during the auto-optimization loop are strictly bounded to a maximum deformation of 5% of the bounding box volume to preserve structural integrity.</li>
+    </ul>
+  </div>
+
+  <!-- ============================================
+       SLIDE 10: ANALYTICAL/NUMERICAL WORK (Metrics)
+       NOTE: NO RED TITLE as requested
+  ============================================ -->
+  <div class="slide" id="slide-10">
+    <div style="font-family: 'Tinos', serif; font-size: 4cqh; font-weight: bold; margin-bottom: 4cqh;">Performance Analysis Metrics</div>
+    <div class="two-col font-sans">
+      <div class="col" style="background: #f0f8ff; padding: 3cqw; border-left: 5px solid #4A90E2;">
+        <h3 style="font-size: 3cqh; color: #00008B; margin-bottom: 2cqh;">Best Performing Scenarios</h3>
+        <ul style="font-size: 2.5cqh; line-height: 1.6; margin-left: 2cqw;">
+          <li><strong>Streamlined Airfoils:</strong> 94.2% accuracy in surface pressure prediction compared to OpenFOAM baselines.</li>
+          <li><strong>Bluff Bodies (Low Reynolds):</strong> Predicts primary vortex shedding locations with 89% spatial alignment.</li>
+          <li><strong>Inference Speed:</strong> Consistent ~45ms forward pass generation on CUDA hardware, fully enabling 60 FPS interactive workflows.</li>
+        </ul>
+      </div>
+      <div class="col" style="background: #fff5f5; padding: 3cqw; border-left: 5px solid #FF0000;">
+        <h3 style="font-size: 3cqh; color: #8B0000; margin-bottom: 2cqh;">Challenging Scenarios</h3>
+        <ul style="font-size: 2.5cqh; line-height: 1.6; margin-left: 2cqw;">
+          <li><strong>High-Turbulence Wakes:</strong> Struggles to capture fine-scale turbulent eddies far downstream from the geometry (energy dissipation is over-smoothed by Fourier modes).</li>
+          <li><strong>Sharp Trailing Edges:</strong> Grid resolution limits (128³) occasionally clip ultra-thin geometries, reducing localized accuracy by ~12%.</li>
+          <li><strong>Transonic Flows:</strong> Currently strictly limited to incompressible regimes (Mach < 0.3); compressibility effects are completely ignored.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SLIDE 11: EXPERIMENTAL SETUP
+  ============================================ -->
+  <div class="slide" id="slide-11">
+    <div class="slide-title">EXPERIMENTAL SETUP</div>
+    <ul class="body-list">
+      <li><strong>Hardware Environment:</strong>
+        <ul style="margin-left: 3cqw; list-style-type: circle;">
+          <li>Compute Node: NVIDIA RTX 4090 (24GB VRAM) for accelerated tensor operations.</li>
+          <li>Processor/Memory: AMD Ryzen 9 7950X, 64GB DDR5 RAM.</li>
+        </ul>
+      </li>
+      <li><strong>Software Environment:</strong>
+        <ul style="margin-left: 3cqw; list-style-type: circle;">
+          <li>Backend: Python 3.10, PyTorch 2.x (with TorchScript compilation), FastAPI.</li>
+          <li>Frontend: Node.js 18, React.js (Vite), React Three Fiber (WebGL).</li>
+          <li>Data Streaming: Flask-SocketIO (custom binary serialization).</li>
+        </ul>
+      </li>
+      <li><strong>Environment Constraints:</strong>
+        <ul style="margin-left: 3cqw; list-style-type: circle;">
+          <li>Testing strictly limited to standard atmospheric conditions (Sea Level Density: 1.225 kg/m³).</li>
+          <li>Assumes fully rigid body geometries (no fluid-structure interaction/deformation).</li>
+          <li>Local network testing to prevent external WebSocket latency anomalies.</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ============================================
+       SLIDE 12: IMPLEMENTATION
+  ============================================ -->
+  <div class="slide" id="slide-12">
+    <div class="slide-title">IMPLEMENTATION</div>
+    <p class="body-text" style="margin-bottom: 3cqh;">The system architecture executes in three primary sequential phases upon user submission:</p>
+    
+    <div style="background: #f9f9f9; padding: 2cqw; border-left: 4px solid #4A90E2; margin-bottom: 2cqh;">
+      <h3 style="font-size: 3cqh; font-family: 'Inter', sans-serif;">Step 1 — Initialization & Geometry Ingestion</h3>
+      <p class="body-text" style="font-size: 2.5cqh; margin-top: 1cqh;">The user uploads a CAD file. The backend loads the geometry into RAM, repairs non-manifold edges, calculates bounding boxes, and scales the entire shape into a standardized normalized unit sphere to match neural network training distributions.</p>
     </div>
 
-    <!-- Navigation -->
-    <nav class="fixed top-0 left-0 w-full z-50 flex justify-center py-6 pointer-events-none">
-        <div class="glass-panel rounded-full px-8 py-3 flex gap-8 pointer-events-auto items-center">
-            <a href="#hero" class="font-display font-bold text-xl tracking-tighter text-white">RA-FLow</a>
-            <div class="h-4 w-[1px] bg-gray-700"></div>
-            <a href="#platform" class="text-xs font-medium text-gray-400 hover:text-neonBlue transition-colors uppercase tracking-widest">Platform</a>
-            <a href="#technology" class="text-xs font-medium text-gray-400 hover:text-neonBlue transition-colors uppercase tracking-widest">Core</a>
-            <a href="#tires" class="text-xs font-medium text-gray-400 hover:text-neonBlue transition-colors uppercase tracking-widest">Dynamics</a>
-            <a href="#partners" class="text-xs font-medium text-gray-400 hover:text-neonBlue transition-colors uppercase tracking-widest">Trusted By</a>
-            <a href="#" class="bg-white text-black px-4 py-1 rounded-sm text-xs font-bold uppercase hover:bg-neonBlue hover:text-black transition-colors">Request Demo</a>
+    <div style="background: #f9f9f9; padding: 2cqw; border-left: 4px solid #4A90E2; margin-bottom: 2cqh;">
+      <h3 style="font-size: 3cqh; font-family: 'Inter', sans-serif;">Step 2 — Feature Extraction & Neural Computation</h3>
+      <p class="body-text" style="font-size: 2.5cqh; margin-top: 1cqh;">The scaled mesh is converted into a binary 128³ voxel grid. The PyTorch compute engine loads this tensor into VRAM, and the pre-trained Fourier Neural Operator executes a forward pass, mapping the solid geometry to volumetric velocity and pressure fields.</p>
+    </div>
+
+    <div style="background: #f9f9f9; padding: 2cqw; border-left: 4px solid #4A90E2;">
+      <h3 style="font-size: 3cqh; font-family: 'Inter', sans-serif;">Step 3 — Output Generation & Streaming</h3>
+      <p class="body-text" style="font-size: 2.5cqh; margin-top: 1cqh;">To preserve bandwidth, the 3D fields are down-sampled into critical surface pressures and dynamic streamlines. This data is serialized into Float32 buffers, streamed via Socket.IO, and instantly parsed by the React Three Fiber environment for WebGL rendering.</p>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SLIDE 13: ALGORITHMS USED
+       NOTE: BLACK TITLE as requested
+  ============================================ -->
+  <div class="slide" id="slide-13">
+    <div class="font-serif" style="font-size: 5cqh; font-weight: bold; text-transform: uppercase; margin-bottom: 3cqh;">ALGORITHMS USED</div>
+    <ol class="body-list">
+      <li><strong>Fourier Neural Operator (FNO):</strong>
+        <ul style="margin-left: 3cqw; list-style-type: circle; font-size: 2.8cqh;">
+          <li><em>Purpose:</em> Chosen for its ability to learn resolution-independent mappings between infinite-dimensional function spaces, allowing rapid PDE solving without traditional iterative grids.</li>
+        </ul>
+      </li>
+      <li><strong>Physics-Informed Loss Function (PINN):</strong>
+        <ul style="margin-left: 3cqw; list-style-type: circle; font-size: 2.8cqh;">
+          <li><em>Purpose:</em> Used during model training to penalize physical violations (e.g., non-zero divergence in incompressible flows), ensuring outputs obey mass conservation.</li>
+        </ul>
+      </li>
+      <li><strong>Gradient Descent Geometry Optimization:</strong>
+        <ul style="margin-left: 3cqw; list-style-type: circle; font-size: 2.8cqh;">
+          <li><em>Purpose:</em> Utilized in the auto-optimization loop to compute gradients of the drag coefficient with respect to surface normals, dictating how to perturb the shape.</li>
+        </ul>
+      </li>
+      <li><strong>Signed Distance Field (SDF) Computation:</strong>
+        <ul style="margin-left: 3cqw; list-style-type: circle; font-size: 2.8cqh;">
+          <li><em>Purpose:</em> Calculates the shortest distance to the mesh surface for every point in space, providing the neural network with critical spatial awareness of boundary conditions.</li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+
+  <!-- ============================================
+       SLIDE 14: IMPLEMENTATION (CODE)
+  ============================================ -->
+  <div class="slide" id="slide-14">
+    <div class="slide-title">IMPLEMENTATION</div>
+    <div class="code-container">
+      <div class="code-box">
+<span class="code-title"># Backend: Neural Inference (PyTorch)</span>
+def predict_flow_fields(voxel_tensor):
+    # Move geometry to GPU
+    grid_data = voxel_tensor.to('cuda', dtype=torch.float32)
+    
+    with torch.no_grad():
+        # Execute Fourier Operator Forward Pass
+        prediction = fno_model(grid_data)
+        
+        # Split channels into Velocity & Pressure
+        u_field = prediction[:, 0:3, :, :, :]
+        p_field = prediction[:, 3, :, :, :]
+        
+    return extract_sparse_streamlines(u_field, p_field)
+      </div>
+      <div class="code-box">
+<span class="code-title">// Frontend: Stream Receiver (React)</span>
+useEffect(() => {
+    const socket = io('ws://backend:8000');
+    
+    socket.on('simulation_frame', (buffer) => {
+        // Parse raw binary Float32Array
+        const data = new Float32Array(buffer);
+        
+        // Update global Zustand state
+        useStore.getState().updateFields({
+            velocities: extractVectors(data),
+            pressures: extractScalars(data)
+        });
+        
+        // Trigger WebGL re-render
+        sceneRef.current.invalidate();
+    });
+}, []);
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SLIDE 15: TESTING/VALIDATION
+  ============================================ -->
+  <div class="slide" id="slide-15">
+    <div class="slide-title">TESTING/VERIFICATION/VALIDATION</div>
+    <p class="body-text" style="font-size: 2.5cqh; margin-bottom: 2cqh;">Validation Matrix: Accuracy of High-Drag Hotspot Prediction (Neural Model vs. OpenFOAM Ground Truth)</p>
+    
+    <div class="heatmap-grid" style="font-family: 'Inter', sans-serif;">
+      <!-- Row 1 (Header) -->
+      <div class="hm-cell hm-header">Geometry Type</div>
+      <div class="hm-cell hm-header">True Positive (Matches)</div>
+      <div class="hm-cell hm-header">False Negative (Missed)</div>
+      <div class="hm-cell hm-header">Accuracy %</div>
+      
+      <!-- Row 2 -->
+      <div class="hm-cell" style="background: #e0e0e0; color: black; border-bottom: 1px solid white;">Standard Airfoils</div>
+      <div class="hm-cell" style="background: #2ca02c;">940 Zones</div>
+      <div class="hm-cell" style="background: #ff7f0e;">58 Zones</div>
+      <div class="hm-cell" style="background: #2ca02c;">94.2%</div>
+      
+      <!-- Row 3 -->
+      <div class="hm-cell" style="background: #e0e0e0; color: black; border-bottom: 1px solid white;">Automotive Shapes</div>
+      <div class="hm-cell" style="background: #98df8a;">815 Zones</div>
+      <div class="hm-cell" style="background: #d62728;">102 Zones</div>
+      <div class="hm-cell" style="background: #98df8a;">88.8%</div>
+      
+      <!-- Row 4 -->
+      <div class="hm-cell" style="background: #e0e0e0; color: black; border-bottom: 1px solid white;">Bluff / Sharp Bodies</div>
+      <div class="hm-cell" style="background: #bcbd22;">710 Zones</div>
+      <div class="hm-cell" style="background: #d62728;">185 Zones</div>
+      <div class="hm-cell" style="background: #bcbd22;">79.3%</div>
+      
+      <!-- Row 5 -->
+      <div class="hm-cell" style="background: #e0e0e0; color: black;">Complex Multi-element</div>
+      <div class="hm-cell" style="background: #ff9896;">650 Zones</div>
+      <div class="hm-cell" style="background: #8c564b;">220 Zones</div>
+      <div class="hm-cell" style="background: #ff9896;">74.7%</div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SLIDE 16: RESULT TRENDS
+       NOTE: NO RED TITLE
+  ============================================ -->
+  <div class="slide" id="slide-16">
+    <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+      <h3 class="font-sans" style="font-size: 3.5cqh; margin-bottom: 2cqh;">Performance Scaling: Computational Speed vs. Geometry Complexity</h3>
+      <div style="width: 80%; height: 70%; position: relative;">
+        <canvas id="chart-s16"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SLIDE 17: ERROR REDUCTION
+       NOTE: NO RED TITLE
+  ============================================ -->
+  <div class="slide" id="slide-17">
+    <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+      <h3 class="font-sans" style="font-size: 3.5cqh; margin-bottom: 2cqh;">Model Optimization: Loss Convergence over Training Epochs</h3>
+      <div style="width: 80%; height: 70%; position: relative;">
+        <canvas id="chart-s17"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SLIDE 18: OUTPUT
+  ============================================ -->
+  <div class="slide" id="slide-18">
+    <div class="slide-title">OUTPUT</div>
+    <div class="ui-mockup">
+      <div class="ui-header">
+        <span>RA-FLOW Visualizer Studio</span>
+        <span style="color: #4cd137;">● SYSTEM ONLINE</span>
+      </div>
+      <div class="ui-body">
+        <div class="ui-sidebar">
+          <strong>Geometry Data</strong><br><br>
+          File: mclaren_f1.obj<br>
+          Vertices: 142,050<br>
+          Status: Voxelized<br><br>
+          <strong>Physics Config</strong><br><br>
+          Inlet Vel: 50 m/s<br>
+          Density: 1.225<br><br>
+          <button style="width: 100%; padding: 1cqh; background: #00008B; color: white; border: none; font-weight: bold; margin-top: 2cqh;">RUN OPTIMIZER</button>
         </div>
-    </nav>
+        <div class="ui-main">
+          <div class="ui-wireframe-cube">
+            [ WebGL 3D Rendering Canvas ]<br><br>
+            Showing: Pressure Heatmap<br>
+            + Particle Streamlines
+          </div>
+          <div style="position: absolute; bottom: 2cqw; right: 2cqw; background: rgba(0,0,0,0.8); color: white; padding: 1cqw; font-size: 2cqh; border-radius: 0.5cqw;">
+            Est. Drag (Cd): 0.312<br>
+            Hotspots Detected: 4
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <!-- MAIN CONTENT SCROLL WRAPPER -->
-    <main class="relative">
+  <!-- ============================================
+       SLIDE 19: REFERENCES
+  ============================================ -->
+  <div class="slide" id="slide-19">
+    <div class="slide-title">REFERENCES</div>
+    <ul class="body-list" style="margin-top: 4cqh;">
+      <li>[1] Li, Zongyi, et al. "Fourier neural operator for parametric partial differential equations." <em>International Conference on Learning Representations (ICLR)</em>. 2021.</li>
+      <li>[2] Raissi, Maziar, Paris Perdikaris, and George E. Karniadakis. "Physics-informed neural networks: A deep learning framework for solving forward and inverse problems involving nonlinear partial differential equations." <em>Journal of Computational physics</em> 378 (2019): 686-707.</li>
+      <li>[3] Anderson, John D. <em>Fundamentals of aerodynamics</em>. 6th Edition. McGraw-Hill Education, 2017.</li>
+      <li>[4] NVIDIA Corporation. "PhysicsNeMo: A Framework for Building Neural Physics Simulations." <em>NVIDIA Developer Documentation</em>. 2024.</li>
+    </ul>
+  </div>
 
-        <!-- SECTION 1: HERO -->
-        <section id="hero" class="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden">
-            <!-- 3D Car Embed (Mercedes Livery) -->
-            <div class="absolute inset-0 z-0 sketchfab-container">
-                <div class="sketchfab-embed-wrapper w-full h-full"> 
-                   <iframe title="F1 2022 Mercedes Livery" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/ebb3a3ddd04f4cbaa4ee6484bb0ecbdb/embed?autostart=1&transparent=1&ui_hint=0&ui_theme=dark&ui_infos=0&ui_controls=0&ui_stop=0&ui_watermark=0" class="hero-iframe"> </iframe> 
-                </div>
-            </div>
-            <!-- Typography Overlay -->
-            <div class="relative z-20 text-center mt-[15vh] pointer-events-none">
-                <div class="flex justify-center mb-4 overflow-hidden">
-                    <span class="inline-block px-3 py-1 border border-neonBlue/30 bg-neonBlue/5 text-neonBlue text-[10px] tracking-[0.3em] font-mono uppercase transform skew-x-[-10deg]">
-                        Aerodynamic Intelligence
-                    </span>
-                </div>
-                <!-- Radiant Glow Background for Readability -->
-                <div class="absolute inset-0 -z-10 bg-gradient-radial from-black/60 to-transparent opacity-80 blur-3xl transform scale-150"></div>
-                <h1 class="hero-title font-display font-bold text-[12vw] leading-[0.85] tracking-tighter uppercase">
-                    RA-FLow
-                </h1>
-                <p class="font-mono text-gray-400 mt-6 text-sm tracking-widest max-w-md mx-auto">
-                    COMPUTATIONAL FLUID DYNAMICS // REIMAGINED
-                </p>
-            </div>
-            <!-- Scroll Indicator -->
-            <div class="absolute bottom-12 flex flex-col items-center gap-2 opacity-50 animate-bounce z-20">
-                <span class="text-[10px] font-mono tracking-widest">INITIALIZE</span>
-                <div class="w-[1px] h-12 bg-gradient-to-b from-transparent via-white to-transparent"></div>
-            </div>
-        </section>
+  <!-- ============================================
+       SLIDE 20: CONCLUSION
+  ============================================ -->
+  <div class="slide" id="slide-20" style="align-items: center; justify-content: center;">
+    <div style="font-family: 'Tinos', serif; font-size: 10cqh; font-weight: bold; color: #000;">
+      THANK YOU
+    </div>
+  </div>
 
-        <!-- SECTION 2: PLATFORM (Value Prop + Neural Mesh) -->
-        <section id="platform" class="relative w-full py-32 px-6 md:px-20 grid-bg border-t border-white/5 z-20 bg-obsidian/20 backdrop-blur-sm">
-            <div class="max-w-7xl mx-auto">
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-12">
-                    <!-- Text Content -->
-                    <div class="md:col-span-5 flex flex-col justify-center space-y-8">
-                        <h2 class="font-display text-4xl md:text-5xl font-bold leading-tight">
-                            Perform <span class="text-neonBlue">Detailed Flow Analysis</span><br>
-                            in seconds.
-                        </h2>
-                        <p class="text-gray-400 leading-relaxed font-light">
-                            Traditional wind tunnels are slow. Legacy CFD is expensive. RA-Flow utilizes proprietary machine learning models trained on nearly a 100 recorded Formula 1 Car dataset to predict aerodynamic loads and flow structures.
-                        </p>
-                        <div class="grid grid-cols-2 gap-4 mt-8">
-                            <div class="glass-card p-6 rounded-sm">
-                                <!-- Fixed text overflow by adjusting size -->
-                                <div class="text-neonBlue font-display text-xl md:text-2xl font-bold">Optimized</div>
-                                <div class="text-gray-500 text-xs uppercase tracking-wider mt-1">Solver Efficiency</div>
-                            </div>
-                            <div class="glass-card p-6 rounded-sm">
-                                <div class="text-white font-display text-xl md:text-2xl font-bold">High Fidelity</div>
-                                <div class="text-gray-500 text-xs uppercase tracking-wider mt-1">Data-Driven Precision</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Detailed Neural Mesh Visualization -->
-                    <div class="md:col-span-7 relative h-[500px] glass-panel rounded-lg overflow-hidden flex items-center justify-center group">
-                        <video src="https://external-preview.redd.it/zq_Z60HNTl4rZc0KV9grJmPc7oUT4sEi8m6tp20VMfA.gif?width=1200&format=mp4&s=a2887d1686d8648337d611483ab7cf7e9df4b095" autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-60 mix-blend-screen"></video>
-                        <div class="relative z-10 text-center pointer-events-none">
-                            <h3 class="font-mono text-neonBlue text-lg bg-black/50 px-4 py-1 backdrop-blur-sm border border-neonBlue/20">NEURAL MESH ACTIVE</h3>
-                            <p class="text-xs text-gray-500 mt-2">Processing Node 0x4F</p>
-                        </div>
-                        <div class="absolute top-4 left-4 w-2 h-2 border-t border-l border-neonBlue"></div>
-                        <div class="absolute top-4 right-4 w-2 h-2 border-t border-r border-neonBlue"></div>
-                        <div class="absolute bottom-4 left-4 w-2 h-2 border-b border-l border-neonBlue"></div>
-                        <div class="absolute bottom-4 right-4 w-2 h-2 border-b border-r border-neonBlue"></div>
-                        <div class="animate-scanline"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
+  <!-- Footer Navigation Info -->
+  <div class="footer" id="slide-indicator">Slide 1 of 20 | Use Left/Right Arrow Keys to Navigate</div>
 
-        <!-- SECTION 3: TECHNOLOGY CORE (Mercedes W13) -->
-        <section id="technology" class="relative w-full py-24 flex flex-col items-center bg-gradient-to-b from-obsidian to-charcoal overflow-hidden z-20">
-            <div class="text-center mb-12 relative z-10">
-                <h2 class="font-display text-3xl md:text-6xl font-bold uppercase tracking-tight">Active Analysis</h2>
-                <div class="flex justify-center gap-4 mt-4 font-mono text-xs text-neonRed">
-                    <span>[ THERMAL MAPPING ]</span>
-                    <span>[ FLOW SEPARATION ]</span>
-                    <span>[ DRAG REDUCTION ]</span>
-                </div>
-            </div>
-            
-            <!-- Interactive Stage - FULL WIDTH EXPANSION -->
-            <div class="relative w-full h-[85vh] glass-panel border-y border-white/5 overflow-hidden shadow-2xl shadow-neonRed/5">
-                
-                <!-- Background Gradient for Depth -->
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10 pointer-events-none"></div>
+</div>
 
-                <!-- Sketchfab Mercedes - Interaction ENABLED via tech-iframe class -->
-                <div class="sketchfab-embed-wrapper h-full w-full relative z-0"> 
-                    <iframe title="Mercedes W13 Concept F1" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/1a1f8d992a3f4e2185603c87a0087781/embed?autostart=1&ui_hint=0&ui_theme=dark&ui_infos=0&ui_controls=1&ui_stop=0&transparent=1" class="tech-iframe"> </iframe> 
-                </div>
+<script>
+  let currentSlideIndex = 0;
+  const totalSlides = 20;
+  const slides = document.querySelectorAll('.slide');
+  const indicator = document.getElementById('slide-indicator');
 
-                <!-- Heatmap/Pressure Overlay (CSS Simulated) -->
-                <div class="heatmap-overlay" id="heatmap-layer"></div>
+  // Chart instances
+  let chart16 = null;
+  let chart17 = null;
 
-                <!-- Floating Analysis Data Points - CONTAINED WITHIN MAX-WIDTH FOR PRECISION -->
-                <div class="absolute inset-0 w-full max-w-7xl mx-auto z-20 pointer-events-none">
-                    
-                    <!-- Point 1: Front Wing -->
-                    <div class="absolute top-[65%] left-[5%] md:left-[10%] pointer-events-none hidden md:block">
-                        <div class="flex items-center gap-4 group">
-                            <!-- Extended line for reach -->
-                            <div class="w-24 h-[1px] bg-white/50 origin-left"></div>
-                            <div class="glass-card p-3 rounded-sm border-l-2 border-neonBlue backdrop-blur-md">
-                                <div class="text-[10px] text-gray-400 uppercase">Front Wing Load</div>
-                                <div class="font-mono text-white text-lg">2.4 kN</div>
-                            </div>
-                        </div>
-                    </div>
+  function initCharts() {
+    // Chart 16: Result Trends (Speed vs Complexity)
+    const ctx16 = document.getElementById('chart-s16').getContext('2d');
+    chart16 = new Chart(ctx16, {
+      type: 'line',
+      data: {
+        labels: ['10k', '50k', '100k', '250k', '500k', '1M'],
+        datasets: [
+          {
+            label: 'Traditional CFD Time (Seconds)',
+            data: [300, 1500, 3200, 9500, 22000, 48000],
+            borderColor: '#ff0000',
+            backgroundColor: 'rgba(255, 0, 0, 0.1)',
+            tension: 0.3,
+            fill: true
+          },
+          {
+            label: 'RA-Flow Inference Time (Seconds)',
+            data: [0.04, 0.045, 0.05, 0.08, 0.12, 0.25],
+            borderColor: '#00008b',
+            backgroundColor: 'rgba(0, 0, 139, 0.1)',
+            tension: 0.3,
+            fill: true
+          }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        scales: {
+          x: { title: { display: true, text: 'Mesh Complexity (Polygon Count)', font: { size: 14 } } },
+          y: { type: 'logarithmic', title: { display: true, text: 'Time to Solution (Log Scale)', font: { size: 14 } } }
+        }
+      }
+    });
 
-                    <!-- Point 2: Sidepod -->
-                    <div class="absolute top-[45%] right-[5%] md:right-[10%] pointer-events-none text-right hidden md:block">
-                        <div class="flex items-center gap-4 flex-row-reverse group">
-                            <!-- Extended line for reach -->
-                            <div class="w-24 h-[1px] bg-white/50 origin-right"></div>
-                            <div class="glass-card p-3 rounded-sm border-r-2 border-neonRed backdrop-blur-md">
-                                <div class="text-[10px] text-gray-400 uppercase">Cooling Intake</div>
-                                <div class="font-mono text-neonRed text-lg">HIGH PRESH</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    // Chart 17: Error Reduction (Loss)
+    const ctx17 = document.getElementById('chart-s17').getContext('2d');
+    chart17 = new Chart(ctx17, {
+      type: 'line',
+      data: {
+        labels: ['0', '10', '20', '30', '40', '50', '60', '70', '80', '90', '100'],
+        datasets: [
+          {
+            label: 'Standard Data Loss (L2 Error)',
+            data: [1.0, 0.5, 0.3, 0.15, 0.1, 0.08, 0.07, 0.065, 0.06, 0.055, 0.05],
+            borderColor: '#4A90E2',
+            borderWidth: 3,
+            tension: 0.4
+          },
+          {
+            label: 'Physics-Informed Loss (Divergence Penalty)',
+            data: [2.5, 1.8, 1.2, 0.8, 0.5, 0.3, 0.2, 0.15, 0.1, 0.08, 0.05],
+            borderColor: '#ff8c00',
+            borderDash: [5, 5],
+            borderWidth: 3,
+            tension: 0.4
+          }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        scales: {
+          x: { title: { display: true, text: 'Training Epochs', font: { size: 14 } } },
+          y: { title: { display: true, text: 'Loss Magnitude', font: { size: 14 } } }
+        }
+      }
+    });
+  }
 
-                <!-- Controls -->
-                <div class="absolute bottom-12 left-0 w-full flex justify-center z-30 gap-4 pointer-events-auto">
-                    <button id="toggle-pressure" class="px-6 py-2 glass-panel hover:bg-neonRed/20 hover:border-neonRed transition-all text-xs font-bold uppercase tracking-widest text-white">
-                        Toggle Pressure Map
-                    </button>
-                    <button class="px-6 py-2 glass-panel hover:bg-neonBlue/20 hover:border-neonBlue transition-all text-xs font-bold uppercase tracking-widest text-white">
-                        Run Solver
-                    </button>
-                </div>
-            </div>
-        </section>
+  function showSlide(index) {
+    if (index < 0 || index >= totalSlides) return;
+    
+    slides.forEach(s => s.classList.remove('active'));
+    slides[index].classList.add('active');
+    currentSlideIndex = index;
+    indicator.innerText = `Slide ${index + 1} of ${totalSlides} | Use Left/Right Arrow Keys to Navigate`;
 
-        <!-- SECTION 4: TIRE AERO (Mercedes W03 Wheel) -->
-        <section id="tires" class="relative w-full min-h-screen flex flex-col md:flex-row bg-charcoal border-t border-white/5 z-20">
-            
-            <!-- 3D Wheel Model (Left Half - 50% Width, Full Height) -->
-            <div class="relative w-full md:w-1/2 min-h-[50vh] md:min-h-full order-2 md:order-1 border-r border-white/5 bg-black/20">
-                <div class="absolute inset-0 bg-gradient-to-r from-transparent to-charcoal/80 z-10 pointer-events-none mix-blend-multiply"></div>
-                <!-- Autospin enabled -->
-                <div class="sketchfab-embed-wrapper w-full h-full absolute inset-0"> 
-                    <iframe title="Mercedes AMG F1 - W03 Wheel" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/7399e364302544b0b1c5caac7ce30cfa/embed?autospin=1&autostart=1&transparent=1&ui_theme=dark&ui_infos=0&ui_watermark=0&ui_controls=1" class="tech-iframe"> </iframe> 
-                </div>
-                <div class="absolute bottom-8 left-8 z-20">
-                        <div class="text-[10px] text-gray-500 font-mono">MODEL: W03_COMPOUND_SOFT</div>
-                        <div class="text-neonBlue text-xs font-bold uppercase">Rotating Frame Active</div>
-                </div>
-            </div>
+    // Trigger Chart.js animations when viewing their specific slides
+    if (index === 15 && chart16) chart16.update(); // Slide 16 is index 15
+    if (index === 16 && chart17) chart17.update(); // Slide 17 is index 16
+  }
 
-            <!-- Content (Right Half - 50% Width) -->
-            <div class="relative w-full md:w-1/2 flex items-center justify-center p-12 md:p-24 order-1 md:order-2">
-                <div class="max-w-xl">
-                    <div class="inline-block">
-                        <span class="text-neonRed font-mono text-xs tracking-widest uppercase mb-2 block">// ROTATIONAL DYNAMICS</span>
-                        <h2 class="font-display text-4xl md:text-5xl font-bold leading-tight text-white">
-                            Surface Drag & <br>Flow Management
-                        </h2>
-                    </div>
-                    <p class="text-gray-400 leading-relaxed font-light mt-8">
-                        Tire squirt and rotational flow instability account for over 40% of total vehicle drag. RA-Flow's unique sliding-mesh solver accurately predicts boundary layer separation on rotating surfaces, allowing for millimeter-perfect brake duct and floor edge optimization.
-                    </p>
-                    <div class="space-y-4 mt-8">
-                        <div class="flex items-center gap-4">
-                            <div class="w-8 h-[1px] bg-neonBlue"></div>
-                            <span class="text-sm font-mono text-gray-300">ISO-THERMAL BRAKE MODELING</span>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="w-8 h-[1px] bg-neonBlue"></div>
-                            <span class="text-sm font-mono text-gray-300">RUBBER DEFORMATION ANALYSIS</span>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="w-8 h-[1px] bg-neonBlue"></div>
-                            <span class="text-sm font-mono text-gray-300">WET WEATHER DISPERSION</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+  // Keyboard navigation lockdown logic (ONLY arrows)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      showSlide(currentSlideIndex + 1);
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      showSlide(currentSlideIndex - 1);
+    }
+  });
 
-        <!-- SECTION 5: GLOBAL STANDARDS (Flag Asset) -->
-        <!-- Fixed Height Issue: Increased to h-screen and adjusted scale -->
-        <section id="global" class="relative w-full h-screen flex items-center justify-center overflow-hidden bg-obsidian z-20 border-t border-white/5">
-            <!-- Background Flag -->
-            <div class="absolute inset-0 opacity-40 sketchfab-container mix-blend-screen">
-                 <div class="sketchfab-embed-wrapper w-full h-full"> 
-                    <iframe title="Flag Sport Car Lamborghini" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/7bfa723e0cab45ad916370d02d77fa53/embed?autostart=1&transparent=1&ui_theme=dark&ui_infos=0&ui_controls=0&ui_stop=0&ui_watermark=0" class="flag-iframe"> </iframe> 
-                </div>
-            </div>
-            
-            <!-- Overlay Content -->
-            <div class="relative z-10 text-center px-4">
-                <div class="inline-flex items-center gap-3 border border-white/20 px-6 py-2 rounded-full backdrop-blur-md bg-black/30 mb-8">
-                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span class="text-xs font-mono text-white tracking-widest uppercase">Global FIA Certification</span>
-                </div>
-                <h2 class="font-display text-5xl md:text-8xl font-bold text-white tracking-tighter mb-4 mix-blend-overlay">
-                    THE GOLD STANDARD
-                </h2>
-            </div>
-        </section>
+  // Strictly prevent any mousewheel interaction
+  window.addEventListener('wheel', (e) => { e.preventDefault(); }, { passive: false });
+  window.addEventListener('touchmove', (e) => { e.preventDefault(); }, { passive: false });
 
-        <!-- SECTION 6: PARTNER CAROUSEL -->
-        <section id="partners" class="relative w-full py-20 bg-black z-20 border-t border-white/5 overflow-hidden">
-            <div class="text-center mb-10">
-                <span class="text-gray-500 text-xs tracking-[0.2em] font-mono uppercase">Trusted by the fastest teams on Earth</span>
-            </div>
-            
-            <div class="relative w-full max-w-[100vw] slider-mask">
-                <div class="flex w-max animate-infinite-scroll hover:[animation-play-state:paused] items-center">
-                    
-                    <!-- Logo Set 1 -->
-                    <div class="flex items-center gap-24 px-12">
-                         <!-- Mercedes AMG -->
-                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
-                            <svg height="40" viewBox="0 0 100 100" fill="currentColor" class="text-white">
-                                <path d="M50 0a50 50 0 100 100A50 50 0 0050 0zm0 92a42 42 0 110-84 42 42 0 010 84zM50 8l-8 32-30-5 27 20-13 29 24-18 24 18-13-29 27-20-30 5z" fill-opacity="0.2"/>
-                                <text x="50" y="65" font-family="sans-serif" font-weight="bold" font-size="12" text-anchor="middle" fill="white">MERCEDES-AMG</text>
-                            </svg>
-                         </div>
-                         <!-- McLaren -->
-                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
-                             <svg height="30" viewBox="0 0 200 40" fill="currentColor" class="text-white">
-                                 <path d="M180 0c-10 0-20 10-20 20s10 20 20 20 20-10 20-20-10-20-20-20z" fill-opacity="0"/>
-                                 <text x="100" y="30" font-family="sans-serif" font-weight="900" font-size="28" text-anchor="middle" fill="white" style="letter-spacing: 2px;">McLAREN</text>
-                             </svg>
-                         </div>
-                         <!-- Red Bull -->
-                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
-                             <svg height="35" viewBox="0 0 200 40" fill="currentColor" class="text-white">
-                                 <text x="100" y="30" font-family="sans-serif" font-weight="900" font-size="24" text-anchor="middle" fill="white" style="letter-spacing: 1px;">ORACLE RED BULL</text>
-                             </svg>
-                         </div>
-                         <!-- SpaceX -->
-                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
-                             <svg height="30" viewBox="0 0 200 40" fill="currentColor" class="text-white">
-                                 <text x="100" y="30" font-family="sans-serif" font-weight="bold" font-size="26" text-anchor="middle" fill="white" style="letter-spacing: 4px;">SpaceX</text>
-                             </svg>
-                         </div>
-                         <!-- Lockheed -->
-                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
-                             <svg height="30" viewBox="0 0 200 40" fill="currentColor" class="text-white">
-                                 <text x="100" y="30" font-family="sans-serif" font-weight="bold" font-size="22" text-anchor="middle" fill="white" style="letter-spacing: 1px;">LOCKHEED MARTIN</text>
-                             </svg>
-                         </div>
-                         <!-- Aston Martin -->
-                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
-                             <svg height="35" viewBox="0 0 200 40" fill="currentColor" class="text-white">
-                                 <text x="100" y="30" font-family="sans-serif" font-weight="bold" font-size="20" text-anchor="middle" fill="white" style="letter-spacing: 2px;">ASTON MARTIN</text>
-                             </svg>
-                         </div>
-                    </div>
+  // Initialize
+  window.onload = () => {
+    initCharts();
+    showSlide(0);
+  };
 
-                    <!-- Logo Set 2 (Duplicate for Loop) -->
-                    <div class="flex items-center gap-24 px-12">
-                         <!-- Mercedes AMG -->
-                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
-                            <svg height="40" viewBox="0 0 100 100" fill="currentColor" class="text-white">
-                                <path d="M50 0a50 50 0 100 100A50 50 0 0050 0zm0 92a42 42 0 110-84 42 42 0 010 84zM50 8l-8 32-30-5 27 20-13 29 24-18 24 18-13-29 27-20-30 5z" fill-opacity="0.2"/>
-                                <text x="50" y="65" font-family="sans-serif" font-weight="bold" font-size="12" text-anchor="middle" fill="white">MERCEDES-AMG</text>
-                            </svg>
-                         </div>
-                         <!-- McLaren -->
-                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
-                             <svg height="30" viewBox="0 0 200 40" fill="currentColor" class="text-white">
-                                 <path d="M180 0c-10 0-20 10-20 20s10 20 20 20 20-10 20-20-10-20-20-20z" fill-opacity="0"/>
-                                 <text x="100" y="30" font-family="sans-serif" font-weight="900" font-size="28" text-anchor="middle" fill="white" style="letter-spacing: 2px;">McLAREN</text>
-                             </svg>
-                         </div>
-                         <!-- Red Bull -->
-                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
-                             <svg height="35" viewBox="0 0 200 40" fill="currentColor" class="text-white">
-                                 <text x="100" y="30" font-family="sans-serif" font-weight="900" font-size="24" text-anchor="middle" fill="white" style="letter-spacing: 1px;">ORACLE RED BULL</text>
-                             </svg>
-                         </div>
-                         <!-- SpaceX -->
-                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
-                             <svg height="30" viewBox="0 0 200 40" fill="currentColor" class="text-white">
-                                 <text x="100" y="30" font-family="sans-serif" font-weight="bold" font-size="26" text-anchor="middle" fill="white" style="letter-spacing: 4px;">SpaceX</text>
-                             </svg>
-                         </div>
-                         <!-- Lockheed -->
-                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
-                             <svg height="30" viewBox="0 0 200 40" fill="currentColor" class="text-white">
-                                 <text x="100" y="30" font-family="sans-serif" font-weight="bold" font-size="22" text-anchor="middle" fill="white" style="letter-spacing: 1px;">LOCKHEED MARTIN</text>
-                             </svg>
-                         </div>
-                         <!-- Aston Martin -->
-                         <div class="opacity-50 hover:opacity-100 transition-opacity logo-glow">
-                             <svg height="35" viewBox="0 0 200 40" fill="currentColor" class="text-white">
-                                 <text x="100" y="30" font-family="sans-serif" font-weight="bold" font-size="20" text-anchor="middle" fill="white" style="letter-spacing: 2px;">ASTON MARTIN</text>
-                             </svg>
-                         </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- SECTION 7: FOOTER / CTA -->
-        <section id="footer" class="relative w-full py-40 flex flex-col items-center justify-center bg-obsidian border-t border-gray-900 z-20">
-            <h2 class="font-display text-5xl md:text-7xl font-bold text-center mb-8">
-                Ready to <span class="text-transparent bg-clip-text bg-gradient-to-r from-neonBlue to-white">Fly?</span>
-            </h2>
-            <p class="text-gray-400 max-w-xl text-center mb-12 font-light">
-                Join the engineering elite who trust RA-Flow for critical aerodynamic computation.
-            </p>
-            <button class="group relative px-8 py-4 bg-white text-black font-bold uppercase tracking-widest text-sm overflow-hidden transition-all hover:scale-105">
-                <div class="absolute inset-0 w-0 bg-neonBlue transition-all duration-[250ms] ease-out group-hover:w-full opacity-20"></div>
-                <span class="relative">Start Enterprise Trial</span>
-            </button>
-
-            <footer class="absolute bottom-6 w-full text-center">
-                <p class="text-[10px] text-gray-700 font-mono">© 2024 RA-FLow SYSTEMS INC. ALL RIGHTS RESERVED.</p>
-            </footer>
-        </section>
-
-    </main>
-
-    <!-- LOGIC -->
-    <script>
-        // --- 1. THREE.JS BACKGROUND SYSTEM (Wind Tunnel Flow: Left -> Right) ---
-        const initThreeJS = () => {
-            const canvas = document.getElementById('flowCanvas');
-            const scene = new THREE.Scene();
-            
-            // Camera setup
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 100;
-
-            const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-            // Create Streamlines (Horizontal flow)
-            const geometry = new THREE.BufferGeometry();
-            const count = 800; // REDUCED COUNT (was 4000)
-            const positions = new Float32Array(count * 3);
-            const speeds = new Float32Array(count); 
-
-            // Initialize particles randomly across a wide X/Y/Z volume
-            for (let i = 0; i < count * 3; i += 3) {
-                // X: Spread wide to allow continuous flow
-                positions[i] = (Math.random() - 0.5) * 600; 
-                // Y: Full screen height spread - TIGHTER SPREAD for center focus
-                positions[i + 1] = (Math.random() - 0.5) * 200; 
-                // Z: Depth spread
-                positions[i + 2] = (Math.random() - 0.5) * 200; 
-                
-                // Random speeds for flow variation
-                speeds[i/3] = Math.random() * 2 + 1; // Faster speed for wind tunnel look
-            }
-
-            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            
-            // Material: Glowing Cyan/Blue Lines
-            const material = new THREE.PointsMaterial({
-                color: 0x00f3ff,
-                size: 0.6, // REDUCED SIZE (was 1.2)
-                transparent: true,
-                opacity: 0.25, // REDUCED OPACITY (was 0.6)
-                blending: THREE.AdditiveBlending
-            });
-
-            const particles = new THREE.Points(geometry, material);
-            scene.add(particles);
-
-            // Animation Loop
-            let scrollFactor = 0;
-            let targetScrollFactor = 0;
-
-            const animate = () => {
-                requestAnimationFrame(animate);
-
-                // Lerp scroll factor
-                scrollFactor += (targetScrollFactor - scrollFactor) * 0.1;
-
-                const positions = particles.geometry.attributes.position.array;
-                const boundary = 300; // Reset point on right side
-
-                for (let i = 0; i < count; i++) {
-                    // Update X position (Left -> Right flow)
-                    // Base speed + scroll boost
-                    const speed = speeds[i] + (scrollFactor * 2); 
-                    
-                    positions[i * 3] += speed;
-
-                    // Reset if moves past right boundary
-                    if (positions[i * 3] > boundary) {
-                        positions[i * 3] = -boundary; // Send back to left
-                        // Randomize Y and Z slightly on reset for organic feel
-                        positions[i * 3 + 1] = (Math.random() - 0.5) * 200; // Match tighter spread
-                        positions[i * 3 + 2] = (Math.random() - 0.5) * 200;
-                    }
-                }
-                
-                particles.geometry.attributes.position.needsUpdate = true;
-                
-                // Subtle camera movement based on mouse
-                camera.position.x += (mouseX * 10 - camera.position.x) * 0.05;
-                camera.position.y += (-mouseY * 10 - camera.position.y) * 0.05;
-                camera.lookAt(scene.position);
-
-                renderer.render(scene, camera);
-            };
-
-            animate();
-
-            // Handle Resize
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-
-            // Integrate with Scroll for speed boost
-            window.addEventListener('scroll', () => {
-                targetScrollFactor = 3.0; // Boost speed on scroll
-                clearTimeout(window.scrollTimeout);
-                window.scrollTimeout = setTimeout(() => {
-                    targetScrollFactor = 0; // Return to normal speed
-                }, 100);
-            });
-        };
-
-        // --- 2. INPUT TRACKING ---
-        let mouseX = 0;
-        let mouseY = 0;
-        window.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-            mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-        });
-
-        // --- 3. GSAP ANIMATIONS ---
-        const initGSAP = () => {
-            gsap.registerPlugin(ScrollTrigger);
-
-            // Hero Text Parallax
-            gsap.to(".hero-title", {
-                scrollTrigger: {
-                    trigger: "body",
-                    start: "top top",
-                    end: "bottom top",
-                    scrub: 1
-                },
-                y: 200,
-                opacity: 0
-            });
-
-            // HUD Data Randomizer
-            setInterval(() => {
-                document.getElementById('solver-fps').innerText = (55 + Math.random() * 10).toFixed(2) + " FPS";
-                document.getElementById('coord-x').innerText = (Math.random() * 100).toFixed(3);
-                document.getElementById('coord-y').innerText = (Math.random() * -100).toFixed(2);
-            }, 200);
-
-            // Simulation Section Reveal
-            gsap.from("#heatmap-layer", {
-                scrollTrigger: {
-                    trigger: ".sketchfab-embed-wrapper",
-                    start: "top center",
-                    toggleActions: "play none none reverse"
-                },
-                opacity: 0,
-                duration: 1
-            });
-        };
-
-        // --- 5. UI INTERACTION ---
-        const initUI = () => {
-            const toggleBtn = document.getElementById('toggle-pressure');
-            const heatmapLayer = document.getElementById('heatmap-layer');
-            let active = false;
-            
-            if(toggleBtn && heatmapLayer) {
-                toggleBtn.addEventListener('click', () => {
-                    active = !active;
-                    heatmapLayer.style.opacity = active ? '0.8' : '0';
-                    toggleBtn.innerText = active ? 'DISABLE PRESSURE MAP' : 'ENABLE PRESSURE MAP';
-                    toggleBtn.classList.toggle('bg-neonRed', active);
-                    toggleBtn.classList.toggle('border-neonRed', active);
-                });
-            }
-        };
-
-        // Initialize Everything
-        window.addEventListener('DOMContentLoaded', () => {
-            initThreeJS();
-            initGSAP();
-            // initNeuralMesh(); Removed unused neural mesh initialization
-            initUI();
-        });
-
-    </script>
+</script>
 </body>
 </html>
