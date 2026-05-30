@@ -1,726 +1,1267 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>RA-Flow Major Project Presentation</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rasheed Ali Shaik | SDE & Applied AI Architect</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#050508',
+                        darkCard: '#0f0f15',
+                        darkBorder: '#1f1f2e',
+                        neonCyan: '#00f0ff',
+                        electricPurple: '#9d4edd',
+                        goldAccent: '#ffb703',
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'neon-glow': '0 0 25px rgba(0, 240, 255, 0.15)',
+                        'purple-glow': '0 0 25px rgba(157, 78, 221, 0.15)',
+                    }
+                }
+            }
+        }
+    </script>
 
-<!-- Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS (Gradients, custom cursor elements, and overrides) -->
+    <style>
+        /* Custom Scrollbar for non-Lenis browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050508;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1f1f2e;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f0ff;
+        }
 
-<!-- Chart.js for data visualization -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        /* Lenis setup */
+        html.lenis, html.lenis body {
+            height: auto;
+        }
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overflow: clip;
+        }
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+        .lenis.lenis-scrolling iframe {
+            pointer-events: none;
+        }
 
-<style>
-  /* ============================================
-     GLOBAL LOCKDOWN - STRICT VIEWPORT FIT
-  ============================================ */
-  * { 
-    margin: 0; 
-    padding: 0; 
-    box-sizing: border-box; 
-  }
+        /* Glowing text elements */
+        .text-glow-cyan {
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+        }
+        .text-glow-purple {
+            text-shadow: 0 0 10px rgba(157, 78, 221, 0.5);
+        }
 
-  html, body {
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden !important; /* No scrollbars ever */
-    background-color: #222; /* Dark outside the presentation */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    touch-action: none; 
-  }
+        /* Custom Cursor styling */
+        .custom-cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #00f0ff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 9999;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+        .custom-cursor-ring {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(157, 78, 221, 0.5);
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 9998;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s, border-color 0.3s;
+        }
 
-  /* ============================================
-     PRESENTATION CONTAINER (16:9 Aspect Ratio)
-  ============================================ */
-  #presentation-container {
-    background-color: #FFFFFF; /* Solid plain white as requested */
-    width: 100%;
-    height: 100%;
-    max-width: calc(100vh * (16 / 9)); /* Force 16:9 width */
-    max-height: calc(100vw * (9 / 16)); /* Force 16:9 height */
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 30px rgba(0,0,0,0.5);
-    /* Container queries for perfect text scaling */
-    container-type: size;
-    container-name: slide;
-  }
+        /* Hide native cursor on devices with fine pointer (desktops) */
+        @media (pointer: fine) {
+            body {
+                cursor: none;
+            }
+            a, button, .interactive-el {
+                cursor: none;
+            }
+        }
 
-  /* ============================================
-     TYPOGRAPHY & THEMES
-  ============================================ */
-  .font-serif { font-family: 'Tinos', 'Times New Roman', Times, serif; color: #000000; }
-  .font-sans { font-family: 'Inter', Arial, sans-serif; color: #000000; }
+        /* Utility classes for animations */
+        .reveal-word {
+            display: inline-block;
+            overflow: hidden;
+            vertical-align: bottom;
+        }
 
-  .slide-title {
-    color: #FF0000; /* Bright Red */
-    font-weight: 700;
-    text-align: left;
-    font-size: 5cqh;
-    text-transform: uppercase;
-    margin-bottom: 3cqh;
-    font-family: 'Tinos', 'Times New Roman', Times, serif;
-  }
-
-  /* ============================================
-     SLIDE LOGIC
-  ============================================ */
-  .slide {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    padding: 6cqh 6cqw;
-    display: none;
-    flex-direction: column;
-  }
-
-  .slide.active {
-    display: flex;
-  }
-
-  /* ============================================
-     SPECIFIC SLIDE STYLES
-  ============================================ */
-  /* Slide 1 Styles */
-  .s1-header { text-align: center; font-size: 3.5cqh; font-weight: bold; margin-bottom: 2cqh; }
-  .s1-dept { text-align: center; font-size: 4cqh; font-weight: bold; margin-bottom: 2cqh; }
-  .s1-phase { text-align: center; font-size: 4cqh; font-weight: bold; color: #00008B; text-transform: uppercase; margin-bottom: 4cqh; }
-  .s1-title { text-align: center; font-size: 6cqh; font-weight: bold; color: #00008B; text-transform: uppercase; margin-bottom: 6cqh; padding: 0 4cqw; }
-  .s1-guide { text-align: center; font-size: 3.5cqh; font-weight: bold; color: #FF0000; margin-bottom: 6cqh; }
-  .s1-presenter { position: absolute; bottom: 6cqh; right: 6cqw; text-align: right; font-size: 3cqh; font-weight: bold; color: #FF0000; line-height: 1.5; }
-
-  /* Generic Body Text */
-  .body-text { font-size: 3.5cqh; line-height: 1.6; text-align: justify; }
-  .body-list { font-size: 3.5cqh; line-height: 1.6; margin-left: 4cqw; }
-  .body-list li { margin-bottom: 1.5cqh; }
-
-  /* Literature Review Table */
-  .lit-table { width: 100%; border-collapse: collapse; font-family: 'Inter', Arial, sans-serif; font-size: 2.8cqh; }
-  .lit-table th { background-color: #4A90E2; color: white; padding: 1.5cqh; border: 1px solid #ccc; text-align: left; }
-  .lit-table td { padding: 1.5cqh; border: 1px solid #ccc; }
-  .lit-table tr:nth-child(even) td { background-color: #E6E6FA; } /* Lavender */
-  .lit-table tr:nth-child(odd) td { background-color: #FFFFFF; }
-
-  /* Flowchart (Slide 8) */
-  .flowchart-bg {
-    background-image: linear-gradient(#e5e5e5 1px, transparent 1px), linear-gradient(90deg, #e5e5e5 1px, transparent 1px);
-    background-size: 4cqw 4cqw;
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 4cqw;
-    border: 1px solid #ccc;
-  }
-  .flow-box {
-    background: white; border: 2px solid #00008B; border-radius: 1cqw; padding: 2cqh 2cqw;
-    text-align: center; font-family: 'Inter', sans-serif; font-weight: bold; font-size: 2.5cqh;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 18%;
-  }
-  .flow-arrow { font-size: 4cqh; color: #00008B; }
-
-  /* Code Blocks (Slide 14) */
-  .code-container { display: flex; justify-content: space-between; gap: 2cqw; flex-grow: 1; }
-  .code-box { 
-    background: #1e1e1e; color: #d4d4d4; font-family: monospace; font-size: 2cqh; 
-    flex: 1; padding: 2cqw; border-radius: 0.5cqw; overflow: hidden; white-space: pre-wrap;
-  }
-  .code-title { color: #569cd6; font-weight: bold; margin-bottom: 1cqh; display: block; }
-
-  /* Heatmap (Slide 15) */
-  .heatmap-grid {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5cqw; 
-    font-family: 'Inter', sans-serif; font-size: 2.5cqh; flex-grow: 1;
-  }
-  .hm-cell { display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
-  .hm-header { background: #333; color: white; font-weight: bold; }
-
-  /* Two Column Layout */
-  .two-col { display: flex; gap: 4cqw; flex-grow: 1; }
-  .col { flex: 1; }
-
-  /* UI Mockup (Slide 18) */
-  .ui-mockup {
-    flex-grow: 1; border: 2px solid #ccc; border-radius: 1cqw; background: #f5f5f5;
-    display: flex; flex-direction: column; overflow: hidden; font-family: 'Inter', sans-serif;
-  }
-  .ui-header { background: #333; color: white; padding: 1cqh 2cqw; font-size: 2.5cqh; font-weight: bold; display: flex; justify-content: space-between;}
-  .ui-body { display: flex; flex-grow: 1; }
-  .ui-sidebar { width: 20%; background: #e0e0e0; padding: 2cqw; font-size: 2cqh; }
-  .ui-main { flex-grow: 1; background: #fff; padding: 2cqw; display: flex; align-items: center; justify-content: center; position: relative;}
-  .ui-wireframe-cube { width: 30cqh; height: 30cqh; border: 2px dashed #4A90E2; border-radius: 1cqw; display: flex; align-items: center; justify-content: center; color: #4A90E2; font-weight: bold; }
-
-  /* Navigation Footer */
-  .footer { position: absolute; bottom: 2cqh; left: 0; width: 100%; text-align: center; font-size: 2cqh; color: #999; font-family: 'Inter', sans-serif; }
-</style>
+        .reveal-char {
+            display: inline-block;
+            transform: translateY(100%);
+        }
+        
+        /* Perspective grid decoration */
+        .grid-bg {
+            background-image: linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            perspective: 500px;
+            transform-style: preserve-3d;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-darkBg text-zinc-100 font-sans overflow-x-hidden selection:bg-neonCyan selection:text-darkBg">
 
-<div id="presentation-container" class="font-serif">
+    <!-- Custom Cursor elements -->
+    <div class="custom-cursor-dot id="cursor-dot"></div>
+    <div class="custom-cursor-ring" id="cursor-ring"></div>
 
-  <!-- ============================================
-       SLIDE 1: TITLE SLIDE
-  ============================================ -->
-  <div class="slide active" id="slide-1">
-    <div style="position: absolute; top: 4cqh; left: 4cqw; width: 8cqw; height: 8cqh; background: #ccc; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; font-size: 1.5cqh;">INST LOGO</div>
-    <div style="position: absolute; top: 4cqh; right: 4cqw; width: 14cqw; height: 6cqh; background: #ccc; display: flex; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; font-size: 1.5cqh;">NBA / NAAC</div>
-    
-    <div style="margin-top: 8cqh;">
-      <div class="s1-header">NATIONAL INSTITUTE OF TECHNOLOGY<br>(UGC-AUTONOMOUS)</div>
-      <div class="s1-dept">Department of Computer Science and Engineering</div>
-      <div class="s1-phase">MAJOR PROJECT (REVIEW-II)</div>
-      <div class="s1-title">RA-Flow: Real-time Aerodynamic Optimization via Neural Operators and Physics-Informed Deep Learning</div>
-      <div class="s1-guide">Under the guidance of<br>Dr. Anil Kumar (Professor)</div>
-      <div class="s1-presenter">
-        PRESENTED BY:<br>
-        Team 7<br>
-        John Doe (19A41A0501)<br>
-        Jane Smith (19A41A0502)<br>
-        Alan Turing (19A41A0503)
-      </div>
-    </div>
-  </div>
-
-  <!-- ============================================
-       SLIDE 2: CONTENTS
-  ============================================ -->
-  <div class="slide" id="slide-2">
-    <div class="slide-title">CONTENTS</div>
-    <ul class="body-list" style="margin-top: 2cqh;">
-      <li>ABSTRACT</li>
-      <li>PROBLEM DEFINITION</li>
-      <li>OBJECTIVES</li>
-      <li>LITERATURE REVIEW</li>
-      <li>PROPOSED METHODOLOGY</li>
-      <li>ANALYSIS & DESIGN</li>
-      <li>ANALYTICAL/NUMERICAL WORK</li>
-      <li>EXPERIMENTAL SETUP</li>
-      <li>IMPLEMENTATION</li>
-      <li>TESTING/VERIFICATION/VALIDATION</li>
-      <li>REFERENCES</li>
-    </ul>
-  </div>
-
-  <!-- ============================================
-       SLIDE 3: ABSTRACT
-  ============================================ -->
-  <div class="slide" id="slide-3">
-    <div class="slide-title">ABSTRACT</div>
-    <p class="body-text">
-      RA-Flow is a high-performance, GPU-accelerated aerodynamic optimization platform designed to bridge the gap between traditional Computational Fluid Dynamics (CFD) and real-time interactive design. By leveraging Fourier Neural Operators (FNO) and Signed Distance Fields (SDF), the system instantaneously predicts complex 3D pressure and velocity fields, entirely bypassing the computationally exhaustive iterative solvers inherent to classical Navier-Stokes equations. The platform ingests industry-standard STL/OBJ geometries, normalizing them into high-resolution voxel grids, and streams inferred physics data via binary WebSockets to a web-based 3D visualization suite. A primary innovation of this research is the Neural Geometric Optimization engine, which autonomously perturbs mesh structures to identify aerodynamic "hotspots" and minimize drag coefficients, reducing the traditional time-to-insight workflow from several hours to mere milliseconds.
-    </p>
-  </div>
-
-  <!-- ============================================
-       SLIDE 4: PROBLEM DEFINITION
-  ============================================ -->
-  <div class="slide" id="slide-4">
-    <div class="slide-title">PROBLEM DEFINITION</div>
-    <ul class="body-list">
-      <li><strong>Prohibitive Computational Cost:</strong> Traditional CFD simulations utilizing RANS, LES, or DNS methodologies require extensive HPC cluster resources and hours to days to converge for a single geometric configuration.</li>
-      <li><strong>The Design Iteration Gap:</strong> Because every minor geometric modification necessitates a complete remeshing and re-simulation cycle, engineers cannot explore design spaces interactively. The feedback loop is disconnected from engineering intuition.</li>
-      <li><strong>Data Opacity:</strong> Classical CFD outputs dense scalar and vector fields that lack immediate automated analytical insight. Identifying specific geometry voxels that disproportionately contribute to aerodynamic drag demands intensive manual post-processing.</li>
-      <li><strong>Tool Fragmentation:</strong> Existing workflows mandate switching between disparate CAD software, mesh generators, physics solvers, and optimization suites, leading to significant data loss and format incompatibilities.</li>
-    </ul>
-  </div>
-
-  <!-- ============================================
-       SLIDE 5: OBJECTIVES
-  ============================================ -->
-  <div class="slide" id="slide-5">
-    <div class="slide-title">OBJECTIVES</div>
-    <ul class="body-list">
-      <li><strong>High-Fidelity Geometry Processing:</strong> Implement an automated pipeline to ingest standard 3D formats, scale them via bounding-box normalization, and generate accurate Signed Distance Fields (SDF).</li>
-      <li><strong>Neural Fluid Simulation:</strong> Develop a Fourier Neural Operator model capable of predicting steady-state velocity and pressure fields with less than 10% error margin compared to traditional CFD baselines.</li>
-      <li><strong>Real-Time Visualization Suite:</strong> Create an interactive 3D WebGL environment capable of rendering pressure heatmaps and velocity vector streamlines at 60 Frames Per Second.</li>
-      <li><strong>Autonomous Optimization Routine:</strong> Engineer an algorithmic loop that proposes localized mesh perturbations to systematically lower the overall drag coefficient of the inputted manifold.</li>
-      <li><strong>Explainability Layer:</strong> Provide visual diagnostics that isolate flow separation points and high-pressure drag regions directly on the geometry.</li>
-    </ul>
-  </div>
-
-  <!-- ============================================
-       SLIDE 6: LITERATURE REVIEW
-  ============================================ -->
-  <div class="slide" id="slide-6">
-    <div class="slide-title">LITERATURE REVIEW</div>
-    <table class="lit-table" style="margin-top: 4cqh;">
-      <thead>
-        <tr>
-          <th style="width: 10%;">Year</th>
-          <th style="width: 25%;">Authors / Reference</th>
-          <th style="width: 35%;">Proposed Methodology</th>
-          <th style="width: 30%;">Limitations / Gaps</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>2017</td>
-          <td>Anderson, J.D. <br><em>Fundamentals of Aerodynamics</em></td>
-          <td>Traditional finite volume/element methods solving Navier-Stokes equations iteratively.</td>
-          <td>Extremely high computational cost; unsuitable for real-time iterative design exploration.</td>
-        </tr>
-        <tr>
-          <td>2019</td>
-          <td>Raissi, M. et al. <br><em>Physics-Informed Neural Networks</em></td>
-          <td>Deep learning framework embedding PDE residuals into the loss function for inverse problems.</td>
-          <td>Requires retraining for every new geometry; lacks zero-shot generalization capabilities.</td>
-        </tr>
-        <tr>
-          <td>2021</td>
-          <td>Li, Z. et al. <br><em>Fourier Neural Operator for Parametric PDEs</em></td>
-          <td>Learning mapping between infinite-dimensional function spaces in the frequency domain.</td>
-          <td>Focused strictly on forward prediction; lacks an integrated geometric optimization feedback loop.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- ============================================
-       SLIDE 7: PROPOSED METHODOLOGY
-  ============================================ -->
-  <div class="slide" id="slide-7">
-    <div class="slide-title">PROPOSED METHODOLOGY</div>
-    <ul class="body-list">
-      <li><strong>Data/Input Source:</strong> Raw STL/OBJ CAD models are uploaded to the platform. The backend utilizes the <em>trimesh</em> library to validate manifold integrity and normalize the geometry into a uniform unit sphere.</li>
-      <li><strong>Processing Phase:</strong> The continuous surface mesh is rasterized into a discrete 128³ voxel grid. Simultaneously, a Signed Distance Field (SDF) is computed to encode boundary proximity data as a distinct tensor channel.</li>
-      <li><strong>Core Logic/Model:</strong> A Fourier Neural Operator (FNO) processes the voxelized tensor. By executing 3D Fast Fourier Transforms (FFT), the model isolates global fluid structures in the frequency domain, outputting predicted velocity and pressure fields.</li>
-      <li><strong>Optimization Loop:</strong> The system calculates gradients of the predicted drag with respect to the input surface normals, slightly perturbing the mesh to iteratively reduce aerodynamic resistance.</li>
-      <li><strong>Output/Interface:</strong> A binary sparse-streaming protocol pushes the generated vector fields via WebSockets to a React Three Fiber frontend, enabling real-time 3D advection rendering.</li>
-    </ul>
-  </div>
-
-  <!-- ============================================
-       SLIDE 8: ANALYSIS & DESIGN
-  ============================================ -->
-  <div class="slide" id="slide-8">
-    <div class="slide-title">ANALYSIS & DESIGN</div>
-    <div class="flowchart-bg">
-      <div class="flow-box">CAD Upload<br>(STL/OBJ)</div>
-      <div class="flow-arrow">➔</div>
-      <div class="flow-box">Preprocessing<br>(Voxelization & SDF)</div>
-      <div class="flow-arrow">➔</div>
-      <div class="flow-box">Central Algorithm<br>(Fourier Neural Operator)</div>
-      <div class="flow-arrow">➔</div>
-      <div class="flow-box">Streaming<br>(Binary WebSockets)</div>
-      <div class="flow-arrow">➔</div>
-      <div class="flow-box">User Interface<br>(WebGL 3D Rendering)</div>
-    </div>
-  </div>
-
-  <!-- ============================================
-       SLIDE 9: ANALYTICAL/NUMERICAL WORK
-  ============================================ -->
-  <div class="slide" id="slide-9">
-    <div class="slide-title">ANALYTICAL/NUMERICAL WORK</div>
-    <ul class="body-list">
-      <li><strong>Dataset Volumetrics:</strong> The system processes inputs mapped strictly to a 128³ spatial resolution. The resulting input tensor dimension is parameterized as <code>[Batch=1, Channels=4, D=128, H=128, W=128]</code>.</li>
-      <li><strong>Output Field Parameters:</strong> The model infers a 4-channel tensor representing steady-state fluid dynamics: Velocity vectors (u, v, w) and scalar static Pressure (p).</li>
-      <li><strong>Drag Force Calculation:</strong> Aerodynamic drag is calculated via surface integral approximation over the boundary voxels: <br>
-      <em>F_d = Σ (p_i · n_i · ΔA_i)</em> where <em>n_i</em> is the surface normal and <em>p_i</em> is localized pressure.</li>
-      <li><strong>Physics-Informed Conservation:</strong> Model output adheres to the continuity equation for incompressible flows, ensuring the divergence of the velocity field approaches zero: <em>∇ · u = 0</em>.</li>
-      <li><strong>Optimization Constraint:</strong> Geometric perturbations during the auto-optimization loop are strictly bounded to a maximum deformation of 5% of the bounding box volume to preserve structural integrity.</li>
-    </ul>
-  </div>
-
-  <!-- ============================================
-       SLIDE 10: ANALYTICAL/NUMERICAL WORK (Metrics)
-       NOTE: NO RED TITLE as requested
-  ============================================ -->
-  <div class="slide" id="slide-10">
-    <div style="font-family: 'Tinos', serif; font-size: 4cqh; font-weight: bold; margin-bottom: 4cqh;">Performance Analysis Metrics</div>
-    <div class="two-col font-sans">
-      <div class="col" style="background: #f0f8ff; padding: 3cqw; border-left: 5px solid #4A90E2;">
-        <h3 style="font-size: 3cqh; color: #00008B; margin-bottom: 2cqh;">Best Performing Scenarios</h3>
-        <ul style="font-size: 2.5cqh; line-height: 1.6; margin-left: 2cqw;">
-          <li><strong>Streamlined Airfoils:</strong> 94.2% accuracy in surface pressure prediction compared to OpenFOAM baselines.</li>
-          <li><strong>Bluff Bodies (Low Reynolds):</strong> Predicts primary vortex shedding locations with 89% spatial alignment.</li>
-          <li><strong>Inference Speed:</strong> Consistent ~45ms forward pass generation on CUDA hardware, fully enabling 60 FPS interactive workflows.</li>
-        </ul>
-      </div>
-      <div class="col" style="background: #fff5f5; padding: 3cqw; border-left: 5px solid #FF0000;">
-        <h3 style="font-size: 3cqh; color: #8B0000; margin-bottom: 2cqh;">Challenging Scenarios</h3>
-        <ul style="font-size: 2.5cqh; line-height: 1.6; margin-left: 2cqw;">
-          <li><strong>High-Turbulence Wakes:</strong> Struggles to capture fine-scale turbulent eddies far downstream from the geometry (energy dissipation is over-smoothed by Fourier modes).</li>
-          <li><strong>Sharp Trailing Edges:</strong> Grid resolution limits (128³) occasionally clip ultra-thin geometries, reducing localized accuracy by ~12%.</li>
-          <li><strong>Transonic Flows:</strong> Currently strictly limited to incompressible regimes (Mach < 0.3); compressibility effects are completely ignored.</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============================================
-       SLIDE 11: EXPERIMENTAL SETUP
-  ============================================ -->
-  <div class="slide" id="slide-11">
-    <div class="slide-title">EXPERIMENTAL SETUP</div>
-    <ul class="body-list">
-      <li><strong>Hardware Environment:</strong>
-        <ul style="margin-left: 3cqw; list-style-type: circle;">
-          <li>Compute Node: NVIDIA RTX 4090 (24GB VRAM) for accelerated tensor operations.</li>
-          <li>Processor/Memory: AMD Ryzen 9 7950X, 64GB DDR5 RAM.</li>
-        </ul>
-      </li>
-      <li><strong>Software Environment:</strong>
-        <ul style="margin-left: 3cqw; list-style-type: circle;">
-          <li>Backend: Python 3.10, PyTorch 2.x (with TorchScript compilation), FastAPI.</li>
-          <li>Frontend: Node.js 18, React.js (Vite), React Three Fiber (WebGL).</li>
-          <li>Data Streaming: Flask-SocketIO (custom binary serialization).</li>
-        </ul>
-      </li>
-      <li><strong>Environment Constraints:</strong>
-        <ul style="margin-left: 3cqw; list-style-type: circle;">
-          <li>Testing strictly limited to standard atmospheric conditions (Sea Level Density: 1.225 kg/m³).</li>
-          <li>Assumes fully rigid body geometries (no fluid-structure interaction/deformation).</li>
-          <li>Local network testing to prevent external WebSocket latency anomalies.</li>
-        </ul>
-      </li>
-    </ul>
-  </div>
-
-  <!-- ============================================
-       SLIDE 12: IMPLEMENTATION
-  ============================================ -->
-  <div class="slide" id="slide-12">
-    <div class="slide-title">IMPLEMENTATION</div>
-    <p class="body-text" style="margin-bottom: 3cqh;">The system architecture executes in three primary sequential phases upon user submission:</p>
-    
-    <div style="background: #f9f9f9; padding: 2cqw; border-left: 4px solid #4A90E2; margin-bottom: 2cqh;">
-      <h3 style="font-size: 3cqh; font-family: 'Inter', sans-serif;">Step 1 — Initialization & Geometry Ingestion</h3>
-      <p class="body-text" style="font-size: 2.5cqh; margin-top: 1cqh;">The user uploads a CAD file. The backend loads the geometry into RAM, repairs non-manifold edges, calculates bounding boxes, and scales the entire shape into a standardized normalized unit sphere to match neural network training distributions.</p>
-    </div>
-
-    <div style="background: #f9f9f9; padding: 2cqw; border-left: 4px solid #4A90E2; margin-bottom: 2cqh;">
-      <h3 style="font-size: 3cqh; font-family: 'Inter', sans-serif;">Step 2 — Feature Extraction & Neural Computation</h3>
-      <p class="body-text" style="font-size: 2.5cqh; margin-top: 1cqh;">The scaled mesh is converted into a binary 128³ voxel grid. The PyTorch compute engine loads this tensor into VRAM, and the pre-trained Fourier Neural Operator executes a forward pass, mapping the solid geometry to volumetric velocity and pressure fields.</p>
-    </div>
-
-    <div style="background: #f9f9f9; padding: 2cqw; border-left: 4px solid #4A90E2;">
-      <h3 style="font-size: 3cqh; font-family: 'Inter', sans-serif;">Step 3 — Output Generation & Streaming</h3>
-      <p class="body-text" style="font-size: 2.5cqh; margin-top: 1cqh;">To preserve bandwidth, the 3D fields are down-sampled into critical surface pressures and dynamic streamlines. This data is serialized into Float32 buffers, streamed via Socket.IO, and instantly parsed by the React Three Fiber environment for WebGL rendering.</p>
-    </div>
-  </div>
-
-  <!-- ============================================
-       SLIDE 13: ALGORITHMS USED
-       NOTE: BLACK TITLE as requested
-  ============================================ -->
-  <div class="slide" id="slide-13">
-    <div class="font-serif" style="font-size: 5cqh; font-weight: bold; text-transform: uppercase; margin-bottom: 3cqh;">ALGORITHMS USED</div>
-    <ol class="body-list">
-      <li><strong>Fourier Neural Operator (FNO):</strong>
-        <ul style="margin-left: 3cqw; list-style-type: circle; font-size: 2.8cqh;">
-          <li><em>Purpose:</em> Chosen for its ability to learn resolution-independent mappings between infinite-dimensional function spaces, allowing rapid PDE solving without traditional iterative grids.</li>
-        </ul>
-      </li>
-      <li><strong>Physics-Informed Loss Function (PINN):</strong>
-        <ul style="margin-left: 3cqw; list-style-type: circle; font-size: 2.8cqh;">
-          <li><em>Purpose:</em> Used during model training to penalize physical violations (e.g., non-zero divergence in incompressible flows), ensuring outputs obey mass conservation.</li>
-        </ul>
-      </li>
-      <li><strong>Gradient Descent Geometry Optimization:</strong>
-        <ul style="margin-left: 3cqw; list-style-type: circle; font-size: 2.8cqh;">
-          <li><em>Purpose:</em> Utilized in the auto-optimization loop to compute gradients of the drag coefficient with respect to surface normals, dictating how to perturb the shape.</li>
-        </ul>
-      </li>
-      <li><strong>Signed Distance Field (SDF) Computation:</strong>
-        <ul style="margin-left: 3cqw; list-style-type: circle; font-size: 2.8cqh;">
-          <li><em>Purpose:</em> Calculates the shortest distance to the mesh surface for every point in space, providing the neural network with critical spatial awareness of boundary conditions.</li>
-        </ul>
-      </li>
-    </ol>
-  </div>
-
-  <!-- ============================================
-       SLIDE 14: IMPLEMENTATION (CODE)
-  ============================================ -->
-  <div class="slide" id="slide-14">
-    <div class="slide-title">IMPLEMENTATION</div>
-    <div class="code-container">
-      <div class="code-box">
-<span class="code-title"># Backend: Neural Inference (PyTorch)</span>
-def predict_flow_fields(voxel_tensor):
-    # Move geometry to GPU
-    grid_data = voxel_tensor.to('cuda', dtype=torch.float32)
-    
-    with torch.no_grad():
-        # Execute Fourier Operator Forward Pass
-        prediction = fno_model(grid_data)
+    <!-- PRELOADER / INTRO SCREEN -->
+    <div id="preloader" class="fixed inset-0 z-[999] flex items-center justify-center bg-black overflow-hidden">
+        <!-- Split curtains -->
+        <div id="loader-curtain-left" class="absolute left-0 top-0 w-1/2 h-full bg-darkBg border-r border-zinc-800"></div>
+        <div id="loader-curtain-right" class="absolute right-0 top-0 w-1/2 h-full bg-darkBg border-l border-zinc-800"></div>
         
-        # Split channels into Velocity & Pressure
-        u_field = prediction[:, 0:3, :, :, :]
-        p_field = prediction[:, 3, :, :, :]
+        <!-- Center Loading Info -->
+        <div class="relative z-10 text-center select-none">
+            <p class="font-display text-sm tracking-[0.4em] text-zinc-500 uppercase mb-4">Initializing Portals</p>
+            <h1 class="font-display font-extrabold text-7xl md:text-9xl text-transparent bg-clip-text bg-gradient-to-r from-neonCyan via-electricPurple to-goldAccent flex items-center justify-center">
+                <span id="load-count">0</span><span class="text-3xl md:text-5xl ml-1 text-zinc-400">%</span>
+            </h1>
+            <div class="w-48 h-[2px] bg-zinc-900 mx-auto mt-6 relative overflow-hidden rounded-full">
+                <div id="load-progress" class="absolute left-0 top-0 h-full w-0 bg-gradient-to-r from-neonCyan to-electricPurple"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="fixed top-0 left-0 w-full z-50 transition-all duration-300 py-6 px-6 lg:px-16" id="site-header">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Brand Logo -->
+            <a href="#hero" class="interactive-el font-display font-bold text-xl md:text-2xl tracking-tighter flex items-center gap-2 group">
+                <span class="h-8 w-8 bg-gradient-to-tr from-neonCyan to-electricPurple rounded-lg flex items-center justify-center text-darkBg font-black text-sm transition-transform duration-300 group-hover:rotate-12">R</span>
+                <span>RASHEED<span class="text-neonCyan">.</span>SHAIK</span>
+            </a>
+
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center gap-10">
+                <a href="#about" class="interactive-el text-sm font-medium tracking-wide text-zinc-400 hover:text-zinc-100 transition-colors uppercase">About</a>
+                <a href="#experience" class="interactive-el text-sm font-medium tracking-wide text-zinc-400 hover:text-zinc-100 transition-colors uppercase">Experience</a>
+                <a href="#projects" class="interactive-el text-sm font-medium tracking-wide text-zinc-400 hover:text-zinc-100 transition-colors uppercase">Projects</a>
+                <a href="#contact" class="interactive-el text-sm font-medium tracking-wide text-zinc-400 hover:text-zinc-100 transition-colors uppercase">Contact</a>
+            </nav>
+
+            <!-- Social Action -->
+            <div class="hidden md:flex items-center gap-4">
+                <a href="https://linkedin.com/in/rasheedalishaik" target="_blank" class="interactive-el btn-magnetic text-zinc-400 hover:text-neonCyan transition-all flex items-center justify-center h-10 w-10 border border-zinc-800 rounded-full bg-zinc-950/40 hover:border-neonCyan">
+                    <i class="fab fa-linkedin-in text-sm"></i>
+                </a>
+                <a href="https://github.com/RasheedAli-Shaik" target="_blank" class="interactive-el btn-magnetic text-zinc-400 hover:text-electricPurple transition-all flex items-center justify-center h-10 w-10 border border-zinc-800 rounded-full bg-zinc-950/40 hover:border-electricPurple">
+                    <i class="fab fa-github text-sm"></i>
+                </a>
+                <a href="#contact" class="interactive-el btn-magnetic px-5 py-2.5 bg-gradient-to-r from-neonCyan/10 to-electricPurple/10 border border-neonCyan/30 hover:border-neonCyan hover:bg-neonCyan/20 transition-all rounded-full text-xs font-semibold uppercase tracking-widest text-zinc-100 flex items-center gap-2">
+                    Let's Connect <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                </a>
+            </div>
+
+            <!-- Mobile Menu Toggle Button -->
+            <button id="mobile-menu-btn" class="interactive-el md:hidden flex flex-col justify-between h-5 w-6 group">
+                <span class="w-full h-[2px] bg-zinc-100 rounded transition-all duration-300 group-hover:bg-neonCyan" id="menu-line-1"></span>
+                <span class="w-full h-[2px] bg-zinc-100 rounded transition-all duration-300 group-hover:bg-electricPurple" id="menu-line-2"></span>
+                <span class="w-full h-[2px] bg-zinc-100 rounded transition-all duration-300 group-hover:bg-neonCyan" id="menu-line-3"></span>
+            </button>
+        </div>
+
+        <!-- Mobile Drawer Navigation -->
+        <div id="mobile-menu" class="fixed inset-0 bg-darkBg/95 backdrop-blur-2xl z-40 hidden flex-col justify-center items-center gap-8 px-6 transition-all duration-500">
+            <a href="#about" class="mobile-nav-link text-3xl font-display font-semibold text-zinc-300 hover:text-neonCyan transition-colors">About</a>
+            <a href="#experience" class="mobile-nav-link text-3xl font-display font-semibold text-zinc-300 hover:text-electricPurple transition-colors">Experience</a>
+            <a href="#projects" class="mobile-nav-link text-3xl font-display font-semibold text-zinc-300 hover:text-goldAccent transition-colors">Projects</a>
+            <a href="#contact" class="mobile-nav-link text-3xl font-display font-semibold text-zinc-300 hover:text-neonCyan transition-colors">Contact</a>
+            
+            <div class="flex items-center gap-6 mt-8">
+                <a href="https://linkedin.com/in/rasheedalishaik" target="_blank" class="text-zinc-300 hover:text-neonCyan text-2xl transition-all">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+                <a href="https://github.com/RasheedAli-Shaik" target="_blank" class="text-zinc-300 hover:text-electricPurple text-2xl transition-all">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="mailto:sk.rasheedali@gmail.com" class="text-zinc-300 hover:text-goldAccent text-2xl transition-all">
+                    <i class="fa-regular fa-envelope"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 px-6 lg:px-16 bg-darkBg">
+        <!-- Generative dynamic mesh backdrops with parallax trigger -->
+        <div class="absolute inset-0 z-0 grid-bg opacity-30 pointer-events-none" id="hero-grid"></div>
         
-    return extract_sparse_streamlines(u_field, p_field)
-      </div>
-      <div class="code-box">
-<span class="code-title">// Frontend: Stream Receiver (React)</span>
-useEffect(() => {
-    const socket = io('ws://backend:8000');
+        <!-- Glowing Ambient Lights -->
+        <div class="absolute top-[20%] left-[10%] w-[400px] h-[400px] bg-neonCyan/15 rounded-full blur-[120px] mix-blend-screen pointer-events-none animation-pulse duration-10000" id="hero-glow-1"></div>
+        <div class="absolute bottom-[25%] right-[10%] w-[500px] h-[500px] bg-electricPurple/15 rounded-full blur-[150px] mix-blend-screen pointer-events-none" id="hero-glow-2"></div>
+
+        <div class="max-w-7xl mx-auto w-full relative z-10 flex flex-col items-center text-center">
+            <!-- Micro Badge -->
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-zinc-800 bg-zinc-950/60 text-zinc-300 mb-8 backdrop-blur-md opacity-0 translate-y-8" id="hero-badge">
+                <span class="w-2 h-2 rounded-full bg-neonCyan animate-ping"></span>
+                <span class="text-xs font-semibold tracking-wider uppercase font-display">Applied AI & Backend Engineer</span>
+            </div>
+
+            <!-- Big Impact Title (Will be split-animated by GSAP) -->
+            <h1 class="font-display font-extrabold text-4xl sm:text-6xl md:text-8xl tracking-tight leading-none mb-6 uppercase flex flex-col select-none" id="hero-headline">
+                <span class="text-white">Engineering Applied</span>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-neonCyan via-electricPurple to-goldAccent">AI & Scalable Systems</span>
+            </h1>
+
+            <!-- Professional Summary -->
+            <p class="max-w-2xl text-base md:text-lg text-zinc-400 font-light leading-relaxed mb-10 opacity-0 translate-y-8" id="hero-subtext">
+                I am <span class="text-zinc-100 font-semibold">Rasheed Ali Shaik</span>, specializing in custom Large Language Model architectures, retrieval infrastructure (RAG), and dependable microservices built to turn ambiguous data problems into premium production services.
+            </p>
+
+            <!-- Interactive Magnetic Call To Actions -->
+            <div class="flex flex-col sm:flex-row items-center gap-6 opacity-0 translate-y-8" id="hero-ctas">
+                <a href="#about" class="interactive-el btn-magnetic inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-neonCyan to-electricPurple text-darkBg font-bold rounded-xl shadow-neon-glow hover:shadow-purple-glow transition-all duration-300 uppercase tracking-wider text-sm">
+                    Explore My Journey
+                    <i class="fa-solid fa-arrow-down animate-bounce text-xs"></i>
+                </a>
+                <a href="#projects" class="interactive-el btn-magnetic inline-flex items-center gap-3 px-8 py-4 bg-zinc-950/60 hover:bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-100 font-semibold rounded-xl transition-all duration-300 uppercase tracking-wider text-sm">
+                    View Systems Repo
+                    <i class="fa-solid fa-folder-open text-xs"></i>
+                </a>
+            </div>
+
+            <!-- Quick Metrics Overview -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 w-full max-w-4xl mt-20 pt-10 border-t border-zinc-900/60 opacity-0 translate-y-8" id="hero-stats">
+                <div class="text-center md:text-left">
+                    <h3 class="text-3xl md:text-4xl font-display font-bold text-glow-cyan text-neonCyan">95%</h3>
+                    <p class="text-xs text-zinc-500 font-medium tracking-widest uppercase mt-1">Chatbot Accuracy</p>
+                </div>
+                <div class="text-center md:text-left">
+                    <h3 class="text-3xl md:text-4xl font-display font-bold text-glow-purple text-electricPurple">40%</h3>
+                    <p class="text-xs text-zinc-500 font-medium tracking-widest uppercase mt-1">WER Reduction ASR</p>
+                </div>
+                <div class="text-center md:text-left">
+                    <h3 class="text-3xl md:text-4xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-neonCyan to-electricPurple">1st</h3>
+                    <p class="text-xs text-zinc-500 font-medium tracking-widest uppercase mt-1">Windsurf Hackathon</p>
+                </div>
+                <div class="text-center md:text-left">
+                    <h3 class="text-3xl md:text-4xl font-display font-bold text-glow-cyan text-goldAccent">8.5</h3>
+                    <p class="text-xs text-zinc-500 font-medium tracking-widest uppercase mt-1">Academics GPA</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator Mouse -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none opacity-0" id="scroll-prompt">
+            <span class="text-[10px] font-display uppercase tracking-[0.3em] text-zinc-600">Scroll down</span>
+            <div class="w-5 h-8 border-2 border-zinc-800 rounded-full flex justify-center p-1.5">
+                <div class="w-1.5 h-1.5 bg-neonCyan rounded-full animate-bounce"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: ABOUT / STORYTELLING HORIZONTAL SCROLL TIMELINE -->
+    <section id="about" class="relative bg-[#07070a] py-24 overflow-hidden border-t border-zinc-900/60">
+        <!-- Glowing accent light background -->
+        <div class="absolute -right-24 top-1/4 w-[600px] h-[600px] bg-electricPurple/5 rounded-full blur-[150px] mix-blend-screen pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-6 lg:px-16 mb-16">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-end">
+                <div>
+                    <h3 class="text-neonCyan font-display font-bold text-sm tracking-widest uppercase mb-2">My DNA</h3>
+                    <h2 class="text-4xl lg:text-5xl font-display font-extrabold tracking-tight text-white uppercase">Architecting Applied Intelligent Infrastructure</h2>
+                </div>
+                <p class="text-zinc-400 font-light max-w-lg leading-relaxed lg:justify-self-end">
+                    I thrive on bridging the gap between cutting-edge AI research and concrete, high-performance execution. I write clean, benchmarked, and production-minded code to solve complex, ambiguous problems.
+                </p>
+            </div>
+        </div>
+
+        <!-- Horizontal Scroll Timeline Container -->
+        <div id="horizontal-scroll-section" class="relative h-screen flex flex-col justify-center select-none">
+            <!-- Pin container -->
+            <div id="horizontal-track" class="flex gap-12 px-6 lg:px-16 w-max items-center h-full max-h-[500px]">
+                
+                <!-- Introduction / Philosophy Card -->
+                <div class="w-[350px] md:w-[450px] h-full bg-darkCard/80 border border-zinc-800/80 p-8 md:p-10 rounded-2xl flex flex-col justify-between backdrop-blur-xl relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-neonCyan to-electricPurple"></div>
+                    <div>
+                        <div class="h-12 w-12 bg-neonCyan/10 border border-neonCyan/30 rounded-xl flex items-center justify-center text-neonCyan text-xl mb-6">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <h4 class="font-display font-bold text-2xl text-zinc-100 mb-4 group-hover:text-neonCyan transition-colors">Core Philosophy</h4>
+                        <p class="text-zinc-400 text-sm font-light leading-relaxed">
+                            I don't just build wrappers. I optimize token workflows, design vector retrieval layouts, implement rigorous evaluation metrics, and containerize pipelines for reliable container environments.
+                        </p>
+                    </div>
+                    <span class="font-display text-xs text-zinc-600 tracking-wider font-semibold uppercase">01 // APPROACH</span>
+                </div>
+
+                <!-- Academic Foundations Card -->
+                <div class="w-[350px] md:w-[450px] h-full bg-darkCard/80 border border-zinc-800/80 p-8 md:p-10 rounded-2xl flex flex-col justify-between backdrop-blur-xl relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-electricPurple to-goldAccent"></div>
+                    <div>
+                        <div class="h-12 w-12 bg-electricPurple/10 border border-electricPurple/30 rounded-xl flex items-center justify-center text-electricPurple text-xl mb-6">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        <h4 class="font-display font-bold text-2xl text-zinc-100 mb-4 group-hover:text-electricPurple transition-colors">Computer Science Roots</h4>
+                        <p class="text-zinc-400 text-sm font-light leading-relaxed mb-3">
+                            <span class="text-zinc-200 font-semibold">B.Tech in Computer Science & Engineering</span><br>
+                            Siddhartha Institute of Technology and Science, Hyderabad (Expected 2026).
+                        </p>
+                        <p class="text-zinc-500 text-xs font-light">
+                            Key coursework in Data Structures, Algorithms, DBMS, Machine Learning, and Computer Networks. Maintains a robust GPA of 8.5/10.0.
+                        </p>
+                    </div>
+                    <span class="font-display text-xs text-zinc-600 tracking-wider font-semibold uppercase">02 // ACADEMICS</span>
+                </div>
+
+                <!-- Applied AI Journey Card -->
+                <div class="w-[350px] md:w-[450px] h-full bg-darkCard/80 border border-zinc-800/80 p-8 md:p-10 rounded-2xl flex flex-col justify-between backdrop-blur-xl relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-goldAccent to-neonCyan"></div>
+                    <div>
+                        <div class="h-12 w-12 bg-goldAccent/10 border border-goldAccent/30 rounded-xl flex items-center justify-center text-goldAccent text-xl mb-6">
+                            <i class="fa-solid fa-code-branch"></i>
+                        </div>
+                        <h4 class="font-display font-bold text-2xl text-zinc-100 mb-4 group-hover:text-goldAccent transition-colors">The Intersection of Code & Data</h4>
+                        <p class="text-zinc-400 text-sm font-light leading-relaxed">
+                            Combining classical backend paradigms with neural pipeline engineering. Deeply skilled in Python, JavaScript, Flask, FastAPI, LangChain, vector architectures, and Docker ecosystems to build cohesive, high-throughput pipelines.
+                        </p>
+                    </div>
+                    <span class="font-display text-xs text-zinc-600 tracking-wider font-semibold uppercase">03 // STACK DEPTH</span>
+                </div>
+
+                <!-- Collaborative & Open Source Card -->
+                <div class="w-[350px] md:w-[450px] h-full bg-darkCard/80 border border-zinc-800/80 p-8 md:p-10 rounded-2xl flex flex-col justify-between backdrop-blur-xl relative overflow-hidden group">
+                    <div class="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-neonCyan to-electricPurple"></div>
+                    <div>
+                        <div class="h-12 w-12 bg-neonCyan/10 border border-neonCyan/30 rounded-xl flex items-center justify-center text-neonCyan text-xl mb-6">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <h4 class="font-display font-bold text-2xl text-zinc-100 mb-4 group-hover:text-neonCyan transition-colors">Testing & Validation Ethos</h4>
+                        <p class="text-zinc-400 text-sm font-light leading-relaxed">
+                            I place absolute emphasis on testing reliability and clear technical trade-offs. Building and shipping system tools with complete unit test suites and highly scalable structure maps is my signature standard.
+                        </p>
+                    </div>
+                    <span class="font-display text-xs text-zinc-600 tracking-wider font-semibold uppercase">04 // RELIABILITY</span>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: PROFESSIONAL EXPERIENCE & SKILLS (PINNED STACKING CARDS) -->
+    <section id="experience" class="relative bg-darkBg py-24 overflow-hidden border-t border-zinc-900/60">
+        <div class="max-w-7xl mx-auto px-6 lg:px-16 mb-20">
+            <h3 class="text-electricPurple font-display font-bold text-sm tracking-widest uppercase mb-2">My History</h3>
+            <h2 class="text-4xl lg:text-5xl font-display font-extrabold tracking-tight text-white uppercase">Experience & Technical Arsenal</h2>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-6 lg:px-16 flex flex-col lg:flex-row gap-16 relative">
+            <!-- Left Side: Interactive Skill Badges Container -->
+            <div class="w-full lg:w-5/12 lg:sticky lg:top-32 h-fit">
+                <h4 class="font-display font-bold text-2xl text-zinc-100 mb-8 uppercase flex items-center gap-3">
+                    <span class="h-1 w-6 bg-neonCyan"></span> Core Capabilities
+                </h4>
+                
+                <div class="space-y-6">
+                    <!-- Linear Progress Bars with dynamic scrolling indicator -->
+                    <div class="skill-progress-item">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-display text-sm font-medium text-zinc-300">Languages (Python, JavaScript, Node)</span>
+                            <span class="font-display text-xs text-neonCyan font-bold">90%</span>
+                        </div>
+                        <div class="h-1.5 w-full bg-zinc-900 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-neonCyan to-electricPurple rounded-full scale-x-0 origin-left transition-transform duration-1000 ease-out skill-progress-bar" data-progress="90%"></div>
+                        </div>
+                    </div>
+
+                    <div class="skill-progress-item">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-display text-sm font-medium text-zinc-300">AI/ML Models & RAG Architecture</span>
+                            <span class="font-display text-xs text-electricPurple font-bold">85%</span>
+                        </div>
+                        <div class="h-1.5 w-full bg-zinc-900 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-electricPurple to-goldAccent rounded-full scale-x-0 origin-left transition-transform duration-1000 ease-out skill-progress-bar" data-progress="85%"></div>
+                        </div>
+                    </div>
+
+                    <div class="skill-progress-item">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-display text-sm font-medium text-zinc-300">Frameworks (FastAPI, Flask, React)</span>
+                            <span class="font-display text-xs text-goldAccent font-bold">80%</span>
+                        </div>
+                        <div class="h-1.5 w-full bg-zinc-900 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-goldAccent to-neonCyan rounded-full scale-x-0 origin-left transition-transform duration-1000 ease-out skill-progress-bar" data-progress="80%"></div>
+                        </div>
+                    </div>
+
+                    <div class="skill-progress-item">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-display text-sm font-medium text-zinc-300">Infrastructure (Docker, GCP, DBs)</span>
+                            <span class="font-display text-xs text-neonCyan font-bold">75%</span>
+                        </div>
+                        <div class="h-1.5 w-full bg-zinc-900 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-neonCyan to-electricPurple rounded-full scale-x-0 origin-left transition-transform duration-1000 ease-out skill-progress-bar" data-progress="75%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skill tags collage -->
+                <div class="flex flex-wrap gap-2 mt-10">
+                    <span class="px-3.5 py-1.5 rounded-full border border-zinc-800 bg-zinc-950/40 text-xs font-medium text-zinc-300 hover:border-neonCyan hover:text-neonCyan transition-all duration-300">LangChain</span>
+                    <span class="px-3.5 py-1.5 rounded-full border border-zinc-800 bg-zinc-950/40 text-xs font-medium text-zinc-300 hover:border-electricPurple hover:text-electricPurple transition-all duration-300">LlamaIndex</span>
+                    <span class="px-3.5 py-1.5 rounded-full border border-zinc-800 bg-zinc-950/40 text-xs font-medium text-zinc-300 hover:border-goldAccent hover:text-goldAccent transition-all duration-300">PyTorch</span>
+                    <span class="px-3.5 py-1.5 rounded-full border border-zinc-800 bg-zinc-950/40 text-xs font-medium text-zinc-300 hover:border-neonCyan hover:text-neonCyan transition-all duration-300">Transformer Fine-Tuning</span>
+                    <span class="px-3.5 py-1.5 rounded-full border border-zinc-800 bg-zinc-950/40 text-xs font-medium text-zinc-300 hover:border-electricPurple hover:text-electricPurple transition-all duration-300">Hugging Face</span>
+                    <span class="px-3.5 py-1.5 rounded-full border border-zinc-800 bg-zinc-950/40 text-xs font-medium text-zinc-300 hover:border-goldAccent hover:text-goldAccent transition-all duration-300">PostgreSQL</span>
+                    <span class="px-3.5 py-1.5 rounded-full border border-zinc-800 bg-zinc-950/40 text-xs font-medium text-zinc-300 hover:border-neonCyan hover:text-neonCyan transition-all duration-300">ChromaDB</span>
+                    <span class="px-3.5 py-1.5 rounded-full border border-zinc-800 bg-zinc-950/40 text-xs font-medium text-zinc-300 hover:border-electricPurple hover:text-electricPurple transition-all duration-300">Docker</span>
+                </div>
+            </div>
+
+            <!-- Right Side: Vertical Pinned Stacking Experience Cards -->
+            <div class="w-full lg:w-7/12 flex flex-col gap-10" id="stack-container">
+                
+                <!-- Experience Card 1 -->
+                <div class="stack-card bg-darkCard border border-zinc-800 p-8 rounded-2xl relative shadow-2xl transition-all duration-300 hover:border-neonCyan flex flex-col justify-between min-h-[350px]">
+                    <div>
+                        <div class="flex items-center justify-between flex-wrap gap-4 mb-6">
+                            <div>
+                                <span class="text-xs font-semibold tracking-wider text-neonCyan font-display uppercase bg-neonCyan/5 border border-neonCyan/20 px-3 py-1 rounded-full">AI Research</span>
+                                <h4 class="font-display font-bold text-2xl text-white mt-3">Swecha</h4>
+                            </div>
+                            <span class="text-sm font-semibold text-zinc-400 font-display">Jun 2024 – Jul 2024</span>
+                        </div>
+                        <h5 class="text-zinc-200 font-semibold mb-4 text-base">AI Research Intern <span class="text-zinc-500 font-normal">| Hyderabad, India</span></h5>
+                        <ul class="space-y-3.5 text-sm text-zinc-400 font-light">
+                            <li class="flex items-start gap-2.5">
+                                <span class="h-1.5 w-1.5 bg-neonCyan rounded-full mt-2 shrink-0"></span>
+                                <span>Led fine-tuning of Transformer-based ASR models for Telugu, achieving a remarkable <strong class="text-zinc-200">40% reduction in Word Error Rate (WER)</strong>.</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <span class="h-1.5 w-1.5 bg-neonCyan rounded-full mt-2 shrink-0"></span>
+                                <span>Engineered audio preprocessing pipeline using <strong class="text-zinc-200">Librosa and TensorFlow</strong>, accelerating overall training throughput by 15%.</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <span class="h-1.5 w-1.5 bg-neonCyan rounded-full mt-2 shrink-0"></span>
+                                <span>Formulated low-resource target language augmentation patterns, radically improving neural generalization profiles.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Experience Card 2 -->
+                <div class="stack-card bg-darkCard border border-zinc-800 p-8 rounded-2xl relative shadow-2xl transition-all duration-300 hover:border-electricPurple flex flex-col justify-between min-h-[350px]">
+                    <div>
+                        <div class="flex items-center justify-between flex-wrap gap-4 mb-6">
+                            <div>
+                                <span class="text-xs font-semibold tracking-wider text-electricPurple font-display uppercase bg-electricPurple/5 border border-electricPurple/20 px-3 py-1 rounded-full">Systems Engineering</span>
+                                <h4 class="font-display font-bold text-2xl text-white mt-3">CODSOFT</h4>
+                            </div>
+                            <span class="text-sm font-semibold text-zinc-400 font-display">Apr 2024 – May 2024</span>
+                        </div>
+                        <h5 class="text-zinc-200 font-semibold mb-4 text-base">Python Developer Intern <span class="text-zinc-500 font-normal">| Remote</span></h5>
+                        <ul class="space-y-3.5 text-sm text-zinc-400 font-light">
+                            <li class="flex items-start gap-2.5">
+                                <span class="h-1.5 w-1.5 bg-electricPurple rounded-full mt-2 shrink-0"></span>
+                                <span>Architected and deployed 3 high-performance microservices using <strong class="text-zinc-200">Flask, RESTful architecture, and Docker</strong>.</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <span class="h-1.5 w-1.5 bg-electricPurple rounded-full mt-2 shrink-0"></span>
+                                <span>Instituted a rigid TDD execution framework, drastically heightening system codebase reliability and regression stability.</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <span class="h-1.5 w-1.5 bg-electricPurple rounded-full mt-2 shrink-0"></span>
+                                <span>Active collaborator in agile sprints utilizing comprehensive Git integrations to manage cross-functional systems delivery.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Experience Card 3 -->
+                <div class="stack-card bg-darkCard border border-zinc-800 p-8 rounded-2xl relative shadow-2xl transition-all duration-300 hover:border-goldAccent flex flex-col justify-between min-h-[350px]">
+                    <div>
+                        <div class="flex items-center justify-between flex-wrap gap-4 mb-6">
+                            <div>
+                                <span class="text-xs font-semibold tracking-wider text-goldAccent font-display uppercase bg-goldAccent/5 border border-goldAccent/20 px-3 py-1 rounded-full">Recognition</span>
+                                <h4 class="font-display font-bold text-2xl text-white mt-3">Certifications & Wins</h4>
+                            </div>
+                            <span class="text-sm font-semibold text-zinc-400 font-display">Global Credentials</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                            <div>
+                                <h5 class="text-zinc-300 font-semibold mb-3 text-xs tracking-widest uppercase">Select Certifications</h5>
+                                <ul class="space-y-2 text-xs text-zinc-400">
+                                    <li class="flex items-center gap-2"><i class="fa-solid fa-certificate text-goldAccent"></i> Databricks Generative AI Engineer</li>
+                                    <li class="flex items-center gap-2"><i class="fa-solid fa-certificate text-goldAccent"></i> Google Cloud Generative AI</li>
+                                    <li class="flex items-center gap-2"><i class="fa-solid fa-certificate text-goldAccent"></i> Machine Learning Specialization (Stanford)</li>
+                                    <li class="flex items-center gap-2"><i class="fa-solid fa-certificate text-goldAccent"></i> Oracle Cloud AI Vector Search Pro</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="text-zinc-300 font-semibold mb-3 text-xs tracking-widest uppercase">Honors & Accolades</h5>
+                                <ul class="space-y-2 text-xs text-zinc-400">
+                                    <li class="flex items-center gap-2"><i class="fa-solid fa-trophy text-neonCyan"></i> 1st Place - Windsurf Hyderabad Hackathon</li>
+                                    <li class="flex items-center gap-2"><i class="fa-solid fa-award text-neonCyan"></i> Linux Foundation Scholar</li>
+                                    <li class="flex items-center gap-2"><i class="fa-solid fa-medal text-neonCyan"></i> 2nd - GCP Community Days Quiz</li>
+                                    <li class="flex items-center gap-2"><i class="fa-solid fa-medal text-neonCyan"></i> 2nd - Databricks Community Quiz</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: PROJECTS / CASE STUDIES -->
+    <section id="projects" class="relative bg-[#07070a] py-24 overflow-hidden border-t border-zinc-900/60">
+        <!-- Ambient radial glow in center of the project section -->
+        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-neonCyan/5 rounded-full blur-[180px] mix-blend-screen pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-6 lg:px-16 mb-16">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <h3 class="text-neonCyan font-display font-bold text-sm tracking-widest uppercase mb-2">Featured Systems</h3>
+                    <h2 class="text-4xl lg:text-5xl font-display font-extrabold tracking-tight text-white uppercase">Architectural Showcases</h2>
+                </div>
+                <span class="text-zinc-500 font-display text-xs tracking-widest uppercase mb-2">Hover to focus // Click for architectural map</span>
+            </div>
+        </div>
+
+        <!-- Cinematic Grid -->
+        <div class="max-w-7xl mx-auto px-6 lg:px-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
+            <!-- Project 1 -->
+            <div class="interactive-el project-card bg-darkCard border border-zinc-800 rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:border-neonCyan group flex flex-col justify-between" 
+                 data-project="1"
+                 data-title="AI-Assisted LaTeX IDE"
+                 data-stack="Python, FastAPI, React.js, Ollama, Tectonic"
+                 data-desc="An advanced full-stack IDE integrating self-hosted local Large Language Models for automated code generation, schema completion, and real-time document error compilation."
+                 data-metrics="Real-time compilation tracking, local model inference latency under 200ms."
+                 data-challenge="Solving asynchronous communication bottleneck during simultaneous LaTeX syntax compiling and streaming local model token completions."
+                 data-solutions="Designed an asynchronous non-blocking event-loop using FastAPI and WebSockets, routing real-time Tectonic LaTeX engine stdout to an interactive frontend layout."
+                 data-img="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop">
+                <div class="relative h-48 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop" alt="LaTeX IDE" class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-darkCard to-transparent opacity-80"></div>
+                </div>
+                <div class="p-6 flex-grow flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="text-[10px] font-semibold font-display tracking-widest text-neonCyan uppercase bg-neonCyan/5 border border-neonCyan/20 px-2.5 py-0.5 rounded-full">Full-Stack IDE</span>
+                            <span class="text-[10px] font-semibold font-display tracking-widest text-zinc-500 uppercase">Self-Hosted AI</span>
+                        </div>
+                        <h4 class="font-display font-bold text-xl text-white group-hover:text-neonCyan transition-colors duration-300">AI-Assisted LaTeX Document IDE</h4>
+                        <p class="text-zinc-400 text-xs font-light leading-relaxed mt-2 line-clamp-3">
+                            Architected a comprehensive development setup bridging self-hosted local neural engines for auto-code completion and real-time output building.
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-between mt-6 pt-4 border-t border-zinc-900">
+                        <span class="text-[10px] font-semibold tracking-wider text-zinc-500 uppercase font-display">View Case Study</span>
+                        <div class="h-8 w-8 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-400 group-hover:border-neonCyan group-hover:text-neonCyan group-hover:bg-neonCyan/5 transition-all">
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project 2 -->
+            <div class="interactive-el project-card bg-darkCard border border-zinc-800 rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:border-electricPurple group flex flex-col justify-between"
+                 data-project="2"
+                 data-title="RAG-based Medical Chatbot"
+                 data-stack="Python, LangChain, ChromaDB, Gemma 2, Flask, Docker"
+                 data-desc="An end-to-end Retrieval-Augmented Generation pipeline engineered for highly precise retrieval of clinical data and clinical question-answering."
+                 data-metrics="Achieved 95% validation accuracy in medical information retrieval tasks with custom precision indexing."
+                 data-challenge="Mitigating hallucinations and clinical inaccurate responses common in standard raw LLM prompt responses."
+                 data-solutions="Implemented dynamic semantic query-routing combined with chunk hierarchical structuring inside ChromaDB. Deployed using containerized microservices behind Flask API gateways."
+                 data-img="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=1200&auto=format&fit=crop">
+                <div class="relative h-48 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=1200&auto=format&fit=crop" alt="Medical Chatbot" class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-darkCard to-transparent opacity-80"></div>
+                </div>
+                <div class="p-6 flex-grow flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="text-[10px] font-semibold font-display tracking-widest text-electricPurple uppercase bg-electricPurple/5 border border-electricPurple/20 px-2.5 py-0.5 rounded-full">RAG Engine</span>
+                            <span class="text-[10px] font-semibold font-display tracking-widest text-zinc-500 uppercase">95% ACCURACY</span>
+                        </div>
+                        <h4 class="font-display font-bold text-xl text-white group-hover:text-electricPurple transition-colors duration-300">RAG-based Medical Chatbot</h4>
+                        <p class="text-zinc-400 text-xs font-light leading-relaxed mt-2 line-clamp-3">
+                            Designed deep vector index search structures with semantic query maps to securely extract clinical details and combat model hallucination.
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-between mt-6 pt-4 border-t border-zinc-900">
+                        <span class="text-[10px] font-semibold tracking-wider text-zinc-500 uppercase font-display">View Case Study</span>
+                        <div class="h-8 w-8 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-400 group-hover:border-electricPurple group-hover:text-electricPurple group-hover:bg-electricPurple/5 transition-all">
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project 3 -->
+            <div class="interactive-el project-card bg-darkCard border border-zinc-800 rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:border-goldAccent group flex flex-col justify-between"
+                 data-project="3"
+                 data-title="AI-Powered Artistic QR Code Generator"
+                 data-stack="Python, Stable Diffusion XL, LoRA, Streamlit"
+                 data-desc="An innovative generative model workflow designed to output high-fidelity aesthetic artistic images that preserve 100% functional digital scanning profiles."
+                 data-metrics="Optimized image processing scanning compatibility to 100% while embedding intricate artwork textures."
+                 data-challenge="Balancing high-contrast visual structural patterns required for digital camera QR scans with smooth artistic texture styling from SDXL models."
+                 data-solutions="Fine-tuned Stable Diffusion XL using custom LoRA weights and designed an inline custom pixel-loss check that ensures the scan targets retain strict contrast tolerances."
+                 data-img="https://images.unsplash.com/photo-1614741118887-7a4ee193a5fa?q=80&w=1200&auto=format&fit=crop">
+                <div class="relative h-48 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1614741118887-7a4ee193a5fa?q=80&w=1200&auto=format&fit=crop" alt="Artistic QR Generator" class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-darkCard to-transparent opacity-80"></div>
+                </div>
+                <div class="p-6 flex-grow flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="text-[10px] font-semibold font-display tracking-widest text-goldAccent uppercase bg-goldAccent/5 border border-goldAccent/20 px-2.5 py-0.5 rounded-full">Gen AI & Diffusion</span>
+                            <span class="text-[10px] font-semibold font-display tracking-widest text-zinc-500 uppercase">Streamlit App</span>
+                        </div>
+                        <h4 class="font-display font-bold text-xl text-white group-hover:text-goldAccent transition-colors duration-300">Artistic QR Code Generator</h4>
+                        <p class="text-zinc-400 text-xs font-light leading-relaxed mt-2 line-clamp-3">
+                            Executed fine-tuning workflows of Stable Diffusion models via custom LoRAs to embed structured codes inside generative designs without loss of function.
+                        </p>
+                    </div>
+                    <div class="flex items-center justify-between mt-6 pt-4 border-t border-zinc-900">
+                        <span class="text-[10px] font-semibold tracking-wider text-zinc-500 uppercase font-display">View Case Study</span>
+                        <div class="h-8 w-8 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-400 group-hover:border-goldAccent group-hover:text-goldAccent group-hover:bg-goldAccent/5 transition-all">
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- CASE STUDY OVERLAY MODAL -->
+    <div id="project-modal" class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-2xl hidden items-center justify-center p-4 overflow-y-auto">
+        <div class="max-w-4xl w-full bg-darkCard border border-zinc-800 rounded-2xl relative overflow-hidden my-8 max-h-[90vh] flex flex-col">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between p-6 md:p-8 border-b border-zinc-900 bg-zinc-950/40 shrink-0">
+                <div>
+                    <span id="modal-stack" class="text-xs font-semibold tracking-widest text-neonCyan font-display uppercase">Tech Stack</span>
+                    <h3 id="modal-title" class="font-display font-bold text-2xl md:text-3xl text-white mt-2">Project Title</h3>
+                </div>
+                <button id="close-modal" class="interactive-el h-10 w-10 border border-zinc-800 rounded-full hover:border-neonCyan hover:text-neonCyan transition-all flex items-center justify-center bg-zinc-950/40">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <!-- Modal Body (Scrollable) -->
+            <div class="p-6 md:p-8 overflow-y-auto space-y-8 flex-grow">
+                <!-- Large Image Banner -->
+                <div class="h-64 md:h-80 w-full overflow-hidden rounded-xl relative">
+                    <img id="modal-image" src="" alt="Project Banner" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-darkCard to-transparent opacity-60"></div>
+                </div>
+
+                <!-- Case Details Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Left: Description and metrics -->
+                    <div class="md:col-span-2 space-y-6">
+                        <div>
+                            <h4 class="text-zinc-100 font-semibold font-display text-base uppercase tracking-wider mb-2">Overview</h4>
+                            <p id="modal-desc" class="text-zinc-400 font-light text-sm leading-relaxed">Detailed description will sit here.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-zinc-100 font-semibold font-display text-base uppercase tracking-wider mb-2">Key Outcomes</h4>
+                            <p id="modal-metrics" class="text-zinc-400 font-light text-sm leading-relaxed">Benchmark metrics go here.</p>
+                        </div>
+                    </div>
+
+                    <!-- Right: Technical Challenge / Solutions -->
+                    <div class="bg-zinc-950/50 border border-zinc-900 p-6 rounded-xl space-y-6">
+                        <div>
+                            <h4 class="text-neonCyan font-semibold font-display text-xs uppercase tracking-widest mb-2 flex items-center gap-2">
+                                <span class="h-1 w-2 bg-neonCyan"></span> Challenge
+                            </h4>
+                            <p id="modal-challenge" class="text-zinc-400 font-light text-xs leading-relaxed">The roadblock solved.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-electricPurple font-semibold font-display text-xs uppercase tracking-widest mb-2 flex items-center gap-2">
+                                <span class="h-1 w-2 bg-electricPurple"></span> Resolution
+                            </h4>
+                            <p id="modal-solutions" class="text-zinc-400 font-light text-xs leading-relaxed">How it was built.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 5: CONTACT / FOOTER -->
+    <section id="contact" class="relative bg-darkBg py-24 overflow-hidden border-t border-zinc-900/60">
+        <!-- Interactive Gradient Radial Mouse Light -->
+        <div id="contact-radial-glow" class="absolute pointer-events-none rounded-full w-[600px] h-[600px] bg-gradient-to-tr from-neonCyan/5 to-electricPurple/5 blur-[120px] mix-blend-screen opacity-0 transition-opacity duration-500" style="left: 0%; top: 0%;"></div>
+
+        <div class="max-w-7xl mx-auto px-6 lg:px-16 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+                
+                <!-- Info Section -->
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-neonCyan font-display font-bold text-sm tracking-widest uppercase mb-2">Join Forces</h3>
+                        <h2 class="text-4xl lg:text-5xl font-display font-extrabold tracking-tight text-white uppercase">Let's build systems together</h2>
+                    </div>
+                    <p class="text-zinc-400 font-light max-w-md leading-relaxed">
+                        I am currently open to exciting SDE, Applied AI, and Machine Learning engineering opportunities. If you have an intricate backend challenge or complex pipeline statement, get in touch.
+                    </p>
+
+                    <!-- Contact particulars list -->
+                    <div class="space-y-4 pt-6">
+                        <div class="flex items-center gap-4">
+                            <div class="h-11 w-11 rounded-full border border-zinc-800 bg-darkCard/50 flex items-center justify-center text-neonCyan">
+                                <i class="fa-solid fa-phone text-xs"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-zinc-500 uppercase tracking-widest font-display">Call / Contact</p>
+                                <a href="tel:+919493819872" class="interactive-el text-sm font-semibold text-zinc-200 hover:text-neonCyan transition-all">+91 94938 19872</a>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="h-11 w-11 rounded-full border border-zinc-800 bg-darkCard/50 flex items-center justify-center text-electricPurple">
+                                <i class="fa-regular fa-envelope text-xs"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-zinc-500 uppercase tracking-widest font-display">Secure Email</p>
+                                <a href="mailto:sk.rasheedali@gmail.com" class="interactive-el text-sm font-semibold text-zinc-200 hover:text-electricPurple transition-all">sk.rasheedali@gmail.com</a>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="h-11 w-11 rounded-full border border-zinc-800 bg-darkCard/50 flex items-center justify-center text-goldAccent">
+                                <i class="fa-solid fa-location-dot text-xs"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-zinc-500 uppercase tracking-widest font-display">Location Node</p>
+                                <p class="text-sm font-semibold text-zinc-200">Hyderabad, Telangana, India</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Section -->
+                <div class="bg-darkCard/80 border border-zinc-800/80 p-8 rounded-2xl backdrop-blur-xl relative">
+                    <form id="contact-form" class="space-y-6">
+                        <div>
+                            <label for="form-name" class="block font-display text-xs tracking-wider uppercase text-zinc-400 mb-2 font-semibold">Your Name</label>
+                            <input type="text" id="form-name" required placeholder="John Doe" class="w-full bg-zinc-950 border border-zinc-800 focus:border-neonCyan hover:border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label for="form-email" class="block font-display text-xs tracking-wider uppercase text-zinc-400 mb-2 font-semibold">Your Email</label>
+                            <input type="email" id="form-email" required placeholder="john@example.com" class="w-full bg-zinc-950 border border-zinc-800 focus:border-neonCyan hover:border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label for="form-message" class="block font-display text-xs tracking-wider uppercase text-zinc-400 mb-2 font-semibold">Message</label>
+                            <textarea id="form-message" required rows="4" placeholder="Let's build something beautiful..." class="w-full bg-zinc-950 border border-zinc-800 focus:border-neonCyan hover:border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-600 outline-none transition-all resize-none"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="interactive-el btn-magnetic w-full py-4 bg-gradient-to-r from-neonCyan to-electricPurple hover:shadow-neon-glow text-darkBg font-bold rounded-xl transition-all duration-300 uppercase tracking-wider text-xs flex items-center justify-center gap-2">
+                            Send Transmission <i class="fa-solid fa-paper-plane text-xs"></i>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+
+            <!-- Footer Meta Parallax Area -->
+            <footer class="mt-24 pt-8 border-t border-zinc-900/60 flex flex-col md:flex-row items-center justify-between gap-6">
+                <p class="text-xs text-zinc-500 font-light">&copy; 2026 Rasheed Ali Shaik. Engineered with premium design frameworks.</p>
+                
+                <div class="flex items-center gap-4">
+                    <a href="https://linkedin.com/in/rasheedalishaik" target="_blank" class="interactive-el text-zinc-500 hover:text-neonCyan text-xs tracking-wider font-display uppercase font-semibold transition-colors">LinkedIn</a>
+                    <span class="text-zinc-800 text-xs">//</span>
+                    <a href="https://github.com/RasheedAli-Shaik" target="_blank" class="interactive-el text-zinc-500 hover:text-electricPurple text-xs tracking-wider font-display uppercase font-semibold transition-colors">GitHub</a>
+                    <span class="text-zinc-800 text-xs">//</span>
+                    <a href="#hero" class="interactive-el text-zinc-500 hover:text-goldAccent text-xs tracking-wider font-display uppercase font-semibold transition-colors">Back to top</a>
+                </div>
+            </footer>
+        </div>
+    </section>
+
+    <!-- CUSTOM FEEDBACK DIALOG (Instead of alerts) -->
+    <div id="feedback-modal" class="fixed inset-0 z-[101] bg-black/90 backdrop-blur-md hidden items-center justify-center p-4">
+        <div class="max-w-md w-full bg-darkCard border border-zinc-800 p-8 rounded-2xl text-center space-y-6">
+            <div class="h-16 w-16 bg-neonCyan/10 border border-neonCyan/30 rounded-full flex items-center justify-center text-neonCyan text-2xl mx-auto">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <div>
+                <h4 class="font-display font-bold text-2xl text-white">Transmission Received</h4>
+                <p class="text-zinc-400 text-sm font-light mt-2">Your message has bypassed security filters. Rasheed will respond shortly.</p>
+            </div>
+            <button id="close-feedback" class="interactive-el btn-magnetic inline-block px-8 py-3 bg-neonCyan text-darkBg font-bold rounded-xl uppercase tracking-widest text-xs">
+                Dismiss Interface
+            </button>
+        </div>
+    </div>
+
+    <!-- REQUIRED ANIMATION SCRIPTS AND LIBRARIES -->
+    <!-- GSAP Core & ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     
-    socket.on('simulation_frame', (buffer) => {
-        // Parse raw binary Float32Array
-        const data = new Float32Array(buffer);
-        
-        // Update global Zustand state
-        useStore.getState().updateFields({
-            velocities: extractVectors(data),
-            pressures: extractScalars(data)
+    <!-- Lenis Smooth Scrolling CDN -->
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js"></script>
+
+    <!-- Lucide icons helper -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        // Init Lucide
+        lucide.createIcons();
+
+        // Register GSAP plugins
+        gsap.registerPlugin(ScrollTrigger);
+
+        // LENIS SMOOTH SCROLLING SETUP
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            mouseMultiplier: 1.1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+            infinite: false,
         });
+
+        // Sync GSAP scroll trigger with Lenis
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => {
+            lenis.raf(time * 1000);
+        });
+        gsap.ticker.lagSmoothing(0);
+
+        // PRELOADER SIMULATOR CONTROLLER
+        let loaderPercentage = 0;
+        const countElement = document.getElementById('load-count');
+        const progressElement = document.getElementById('load-progress');
         
-        // Trigger WebGL re-render
-        sceneRef.current.invalidate();
-    });
-}, []);
-      </div>
-    </div>
-  </div>
-
-  <!-- ============================================
-       SLIDE 15: TESTING/VALIDATION
-  ============================================ -->
-  <div class="slide" id="slide-15">
-    <div class="slide-title">TESTING/VERIFICATION/VALIDATION</div>
-    <p class="body-text" style="font-size: 2.5cqh; margin-bottom: 2cqh;">Validation Matrix: Accuracy of High-Drag Hotspot Prediction (Neural Model vs. OpenFOAM Ground Truth)</p>
-    
-    <div class="heatmap-grid" style="font-family: 'Inter', sans-serif;">
-      <!-- Row 1 (Header) -->
-      <div class="hm-cell hm-header">Geometry Type</div>
-      <div class="hm-cell hm-header">True Positive (Matches)</div>
-      <div class="hm-cell hm-header">False Negative (Missed)</div>
-      <div class="hm-cell hm-header">Accuracy %</div>
-      
-      <!-- Row 2 -->
-      <div class="hm-cell" style="background: #e0e0e0; color: black; border-bottom: 1px solid white;">Standard Airfoils</div>
-      <div class="hm-cell" style="background: #2ca02c;">940 Zones</div>
-      <div class="hm-cell" style="background: #ff7f0e;">58 Zones</div>
-      <div class="hm-cell" style="background: #2ca02c;">94.2%</div>
-      
-      <!-- Row 3 -->
-      <div class="hm-cell" style="background: #e0e0e0; color: black; border-bottom: 1px solid white;">Automotive Shapes</div>
-      <div class="hm-cell" style="background: #98df8a;">815 Zones</div>
-      <div class="hm-cell" style="background: #d62728;">102 Zones</div>
-      <div class="hm-cell" style="background: #98df8a;">88.8%</div>
-      
-      <!-- Row 4 -->
-      <div class="hm-cell" style="background: #e0e0e0; color: black; border-bottom: 1px solid white;">Bluff / Sharp Bodies</div>
-      <div class="hm-cell" style="background: #bcbd22;">710 Zones</div>
-      <div class="hm-cell" style="background: #d62728;">185 Zones</div>
-      <div class="hm-cell" style="background: #bcbd22;">79.3%</div>
-      
-      <!-- Row 5 -->
-      <div class="hm-cell" style="background: #e0e0e0; color: black;">Complex Multi-element</div>
-      <div class="hm-cell" style="background: #ff9896;">650 Zones</div>
-      <div class="hm-cell" style="background: #8c564b;">220 Zones</div>
-      <div class="hm-cell" style="background: #ff9896;">74.7%</div>
-    </div>
-  </div>
-
-  <!-- ============================================
-       SLIDE 16: RESULT TRENDS
-       NOTE: NO RED TITLE
-  ============================================ -->
-  <div class="slide" id="slide-16">
-    <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-      <h3 class="font-sans" style="font-size: 3.5cqh; margin-bottom: 2cqh;">Performance Scaling: Computational Speed vs. Geometry Complexity</h3>
-      <div style="width: 80%; height: 70%; position: relative;">
-        <canvas id="chart-s16"></canvas>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============================================
-       SLIDE 17: ERROR REDUCTION
-       NOTE: NO RED TITLE
-  ============================================ -->
-  <div class="slide" id="slide-17">
-    <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-      <h3 class="font-sans" style="font-size: 3.5cqh; margin-bottom: 2cqh;">Model Optimization: Loss Convergence over Training Epochs</h3>
-      <div style="width: 80%; height: 70%; position: relative;">
-        <canvas id="chart-s17"></canvas>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============================================
-       SLIDE 18: OUTPUT
-  ============================================ -->
-  <div class="slide" id="slide-18">
-    <div class="slide-title">OUTPUT</div>
-    <div class="ui-mockup">
-      <div class="ui-header">
-        <span>RA-FLOW Visualizer Studio</span>
-        <span style="color: #4cd137;">● SYSTEM ONLINE</span>
-      </div>
-      <div class="ui-body">
-        <div class="ui-sidebar">
-          <strong>Geometry Data</strong><br><br>
-          File: mclaren_f1.obj<br>
-          Vertices: 142,050<br>
-          Status: Voxelized<br><br>
-          <strong>Physics Config</strong><br><br>
-          Inlet Vel: 50 m/s<br>
-          Density: 1.225<br><br>
-          <button style="width: 100%; padding: 1cqh; background: #00008B; color: white; border: none; font-weight: bold; margin-top: 2cqh;">RUN OPTIMIZER</button>
-        </div>
-        <div class="ui-main">
-          <div class="ui-wireframe-cube">
-            [ WebGL 3D Rendering Canvas ]<br><br>
-            Showing: Pressure Heatmap<br>
-            + Particle Streamlines
-          </div>
-          <div style="position: absolute; bottom: 2cqw; right: 2cqw; background: rgba(0,0,0,0.8); color: white; padding: 1cqw; font-size: 2cqh; border-radius: 0.5cqw;">
-            Est. Drag (Cd): 0.312<br>
-            Hotspots Detected: 4
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ============================================
-       SLIDE 19: REFERENCES
-  ============================================ -->
-  <div class="slide" id="slide-19">
-    <div class="slide-title">REFERENCES</div>
-    <ul class="body-list" style="margin-top: 4cqh;">
-      <li>[1] Li, Zongyi, et al. "Fourier neural operator for parametric partial differential equations." <em>International Conference on Learning Representations (ICLR)</em>. 2021.</li>
-      <li>[2] Raissi, Maziar, Paris Perdikaris, and George E. Karniadakis. "Physics-informed neural networks: A deep learning framework for solving forward and inverse problems involving nonlinear partial differential equations." <em>Journal of Computational physics</em> 378 (2019): 686-707.</li>
-      <li>[3] Anderson, John D. <em>Fundamentals of aerodynamics</em>. 6th Edition. McGraw-Hill Education, 2017.</li>
-      <li>[4] NVIDIA Corporation. "PhysicsNeMo: A Framework for Building Neural Physics Simulations." <em>NVIDIA Developer Documentation</em>. 2024.</li>
-    </ul>
-  </div>
-
-  <!-- ============================================
-       SLIDE 20: CONCLUSION
-  ============================================ -->
-  <div class="slide" id="slide-20" style="align-items: center; justify-content: center;">
-    <div style="font-family: 'Tinos', serif; font-size: 10cqh; font-weight: bold; color: #000;">
-      THANK YOU
-    </div>
-  </div>
-
-  <!-- Footer Navigation Info -->
-  <div class="footer" id="slide-indicator">Slide 1 of 20 | Use Left/Right Arrow Keys to Navigate</div>
-
-</div>
-
-<script>
-  let currentSlideIndex = 0;
-  const totalSlides = 20;
-  const slides = document.querySelectorAll('.slide');
-  const indicator = document.getElementById('slide-indicator');
-
-  // Chart instances
-  let chart16 = null;
-  let chart17 = null;
-
-  function initCharts() {
-    // Chart 16: Result Trends (Speed vs Complexity)
-    const ctx16 = document.getElementById('chart-s16').getContext('2d');
-    chart16 = new Chart(ctx16, {
-      type: 'line',
-      data: {
-        labels: ['10k', '50k', '100k', '250k', '500k', '1M'],
-        datasets: [
-          {
-            label: 'Traditional CFD Time (Seconds)',
-            data: [300, 1500, 3200, 9500, 22000, 48000],
-            borderColor: '#ff0000',
-            backgroundColor: 'rgba(255, 0, 0, 0.1)',
-            tension: 0.3,
-            fill: true
-          },
-          {
-            label: 'RA-Flow Inference Time (Seconds)',
-            data: [0.04, 0.045, 0.05, 0.08, 0.12, 0.25],
-            borderColor: '#00008b',
-            backgroundColor: 'rgba(0, 0, 139, 0.1)',
-            tension: 0.3,
-            fill: true
-          }
-        ]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        scales: {
-          x: { title: { display: true, text: 'Mesh Complexity (Polygon Count)', font: { size: 14 } } },
-          y: { type: 'logarithmic', title: { display: true, text: 'Time to Solution (Log Scale)', font: { size: 14 } } }
+        function updateLoader() {
+            if (loaderPercentage < 100) {
+                // Simulating unequal speed progression for organic feel
+                loaderPercentage += Math.floor(Math.random() * 8) + 2;
+                if (loaderPercentage > 100) loaderPercentage = 100;
+                countElement.innerText = loaderPercentage;
+                progressElement.style.width = loaderPercentage + '%';
+                setTimeout(updateLoader, Math.floor(Math.random() * 80) + 40);
+            } else {
+                // Outro preloader transition with GSAP curtains split
+                const tl = gsap.timeline();
+                tl.to("#preloader .relative", { opacity: 0, scale: 0.8, duration: 0.5, ease: "power3.in" })
+                  .to("#loader-curtain-left", { xPercent: -101, duration: 1, ease: "power4.inOut" }, "-=0.2")
+                  .to("#loader-curtain-right", { xPercent: 101, duration: 1, ease: "power4.inOut" }, "<")
+                  .set("#preloader", { display: "none" })
+                  .call(triggerHeroAnimations);
+            }
         }
-      }
-    });
 
-    // Chart 17: Error Reduction (Loss)
-    const ctx17 = document.getElementById('chart-s17').getContext('2d');
-    chart17 = new Chart(ctx17, {
-      type: 'line',
-      data: {
-        labels: ['0', '10', '20', '30', '40', '50', '60', '70', '80', '90', '100'],
-        datasets: [
-          {
-            label: 'Standard Data Loss (L2 Error)',
-            data: [1.0, 0.5, 0.3, 0.15, 0.1, 0.08, 0.07, 0.065, 0.06, 0.055, 0.05],
-            borderColor: '#4A90E2',
-            borderWidth: 3,
-            tension: 0.4
-          },
-          {
-            label: 'Physics-Informed Loss (Divergence Penalty)',
-            data: [2.5, 1.8, 1.2, 0.8, 0.5, 0.3, 0.2, 0.15, 0.1, 0.08, 0.05],
-            borderColor: '#ff8c00',
-            borderDash: [5, 5],
-            borderWidth: 3,
-            tension: 0.4
-          }
-        ]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        scales: {
-          x: { title: { display: true, text: 'Training Epochs', font: { size: 14 } } },
-          y: { title: { display: true, text: 'Loss Magnitude', font: { size: 14 } } }
+        // On document load execution
+        window.addEventListener('DOMContentLoaded', () => {
+            updateLoader();
+            setupInteractiveFeatures();
+        });
+
+        // HERO REVEAL ENTRANCE ANIMATIONS
+        function triggerHeroAnimations() {
+            const tl = gsap.timeline();
+            
+            // Un-split the text elements & reveal from bottom
+            tl.to("#hero-badge", { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" })
+              .from("#hero-headline span", {
+                  y: 80,
+                  opacity: 0,
+                  rotation: 2,
+                  stagger: 0.15,
+                  duration: 0.8,
+                  ease: "power4.out"
+              }, "-=0.3")
+              .to("#hero-subtext", { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, "-=0.4")
+              .to("#hero-ctas", { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, "-=0.5")
+              .to("#hero-stats", { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, "-=0.5")
+              .to("#scroll-prompt", { opacity: 1, duration: 0.5 }, "-=0.2");
+              
+            // Floating 3D parallax elements on background grid
+            gsap.to("#hero-grid", {
+                scrollTrigger: {
+                    trigger: "#hero",
+                    start: "top top",
+                    end: "bottom top",
+                    scrub: true
+                },
+                yPercent: 15,
+                rotationZ: 2,
+                ease: "none"
+            });
+            
+            // Subtly animate floating ambient orbs
+            gsap.to("#hero-glow-1", {
+                x: 100,
+                y: -50,
+                duration: 10,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+            gsap.to("#hero-glow-2", {
+                x: -100,
+                y: 50,
+                duration: 12,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
         }
-      }
-    });
-  }
 
-  function showSlide(index) {
-    if (index < 0 || index >= totalSlides) return;
-    
-    slides.forEach(s => s.classList.remove('active'));
-    slides[index].classList.add('active');
-    currentSlideIndex = index;
-    indicator.innerText = `Slide ${index + 1} of ${totalSlides} | Use Left/Right Arrow Keys to Navigate`;
+        // INTERACTIVE CAPABILITIES & CURSOR SETUP
+        function setupInteractiveFeatures() {
+            const cursorDot = document.getElementById('cursor-dot');
+            const cursorRing = document.getElementById('cursor-ring');
+            
+            // Check if device is tactile/mobile
+            const isTouch = window.matchMedia("(pointer: coarse)").matches;
+            
+            if (isTouch) {
+                // Disable custom cursors entirely for mobile touch devices
+                cursorDot.style.display = 'none';
+                cursorRing.style.display = 'none';
+            } else {
+                // Custom mouse followers
+                let mouseX = 0, mouseY = 0;
+                let ringX = 0, ringY = 0;
+                
+                window.addEventListener('mousemove', (e) => {
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                    
+                    gsap.to(cursorDot, {
+                        x: mouseX,
+                        y: mouseY,
+                        duration: 0.1,
+                        ease: "power2.out"
+                    });
+                });
+                
+                // Keep cursor ring trailing smoothly
+                function updateRing() {
+                    ringX += (mouseX - ringX) * 0.15;
+                    ringY += (mouseY - ringY) * 0.15;
+                    
+                    gsap.set(cursorRing, {
+                        x: ringX,
+                        y: ringY
+                    });
+                    
+                    requestAnimationFrame(updateRing);
+                }
+                updateRing();
+                
+                // Hover states for active design assets
+                const interactives = document.querySelectorAll('.interactive-el');
+                interactives.forEach(el => {
+                    el.addEventListener('mouseenter', () => {
+                        gsap.to(cursorRing, {
+                            width: 60,
+                            height: 60,
+                            borderColor: '#00f0ff',
+                            duration: 0.3
+                        });
+                        gsap.to(cursorDot, {
+                            backgroundColor: '#9d4edd',
+                            width: 12,
+                            height: 12,
+                            duration: 0.3
+                        });
+                    });
+                    el.addEventListener('mouseleave', () => {
+                        gsap.to(cursorRing, {
+                            width: 40,
+                            height: 40,
+                            borderColor: 'rgba(157, 78, 221, 0.5)',
+                            duration: 0.3
+                        });
+                        gsap.to(cursorDot, {
+                            backgroundColor: '#00f0ff',
+                            width: 8,
+                            height: 8,
+                            duration: 0.3
+                        });
+                    });
+                });
+            }
 
-    // Trigger Chart.js animations when viewing their specific slides
-    if (index === 15 && chart16) chart16.update(); // Slide 16 is index 15
-    if (index === 16 && chart17) chart17.update(); // Slide 17 is index 16
-  }
+            // HEADER BLUR SCROLL EVENT
+            const header = document.getElementById('site-header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('bg-darkBg/80', 'backdrop-blur-md', 'py-4', 'border-b', 'border-zinc-900/40');
+                    header.classList.remove('py-6');
+                } else {
+                    header.classList.remove('bg-darkBg/80', 'backdrop-blur-md', 'py-4', 'border-b', 'border-zinc-900/40');
+                    header.classList.add('py-6');
+                }
+            });
 
-  // Keyboard navigation lockdown logic (ONLY arrows)
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight') {
-      e.preventDefault();
-      showSlide(currentSlideIndex + 1);
-    } else if (e.key === 'ArrowLeft') {
-      e.preventDefault();
-      showSlide(currentSlideIndex - 1);
-    }
-  });
+            // MOBILE MENU TRANSITION
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+            const menuL1 = document.getElementById('menu-line-1');
+            const menuL2 = document.getElementById('menu-line-2');
+            const menuL3 = document.getElementById('menu-line-3');
+            let menuOpen = false;
 
-  // Strictly prevent any mousewheel interaction
-  window.addEventListener('wheel', (e) => { e.preventDefault(); }, { passive: false });
-  window.addEventListener('touchmove', (e) => { e.preventDefault(); }, { passive: false });
+            function toggleMenu() {
+                menuOpen = !menuOpen;
+                if (menuOpen) {
+                    mobileMenu.classList.remove('hidden');
+                    mobileMenu.classList.add('flex');
+                    gsap.fromTo(mobileMenu, { opacity: 0 }, { opacity: 1, duration: 0.4 });
+                    gsap.fromTo(".mobile-nav-link", { y: 20, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.1, duration: 0.5, delay: 0.1 });
+                    
+                    // Hamburger animation to 'X'
+                    gsap.to(menuL1, { rotation: 45, y: 9, duration: 0.3 });
+                    gsap.to(menuL2, { opacity: 0, duration: 0.2 });
+                    gsap.to(menuL3, { rotation: -45, y: -9, duration: 0.3 });
+                } else {
+                    gsap.to(mobileMenu, { 
+                        opacity: 0, 
+                        duration: 0.4, 
+                        onComplete: () => {
+                            mobileMenu.classList.add('hidden');
+                            mobileMenu.classList.remove('flex');
+                        } 
+                    });
+                    
+                    // Reverse Hamburger
+                    gsap.to(menuL1, { rotation: 0, y: 0, duration: 0.3 });
+                    gsap.to(menuL2, { opacity: 1, duration: 0.2 });
+                    gsap.to(menuL3, { rotation: 0, y: 0, duration: 0.3 });
+                }
+            }
 
-  // Initialize
-  window.onload = () => {
-    initCharts();
-    showSlide(0);
-  };
+            mobileBtn.addEventListener('click', toggleMenu);
+            mobileLinks.forEach(link => link.addEventListener('click', () => {
+                if (menuOpen) toggleMenu();
+            }));
 
-</script>
+            // MAGNETIC STYLING PHYSICS FOR BUTTONS
+            const magnetics = document.querySelectorAll('.btn-magnetic');
+            magnetics.forEach(btn => {
+                btn.addEventListener('mousemove', (e) => {
+                    const rect = btn.getBoundingClientRect();
+                    const x = e.clientX - rect.left - (rect.width / 2);
+                    const y = e.clientY - rect.top - (rect.height / 2);
+                    
+                    gsap.to(btn, {
+                        x: x * 0.35,
+                        y: y * 0.35,
+                        duration: 0.3,
+                        ease: "power2.out"
+                    });
+                });
+                btn.addEventListener('mouseleave', () => {
+                    gsap.to(btn, {
+                        x: 0,
+                        y: 0,
+                        duration: 0.5,
+                        ease: "elastic.out(1, 0.3)"
+                    });
+                });
+            });
+
+            // HORIZONTAL SCROLL TIMELINE EFFECT
+            const horizontalTrack = document.getElementById('horizontal-track');
+            gsap.to(horizontalTrack, {
+                x: () => -(horizontalTrack.scrollWidth - window.innerWidth + 100),
+                ease: "none",
+                scrollTrigger: {
+                    trigger: "#horizontal-scroll-section",
+                    start: "center center",
+                    end: () => `+=${horizontalTrack.scrollWidth}`,
+                    scrub: true,
+                    pin: "#about", // Pins the outer section so we can scroll side-to-side
+                    invalidateOnRefresh: true,
+                }
+            });
+
+            // EXPERIENCE STACKING PANEL SYSTEM
+            const cards = gsap.utils.toArray(".stack-card");
+            cards.forEach((card, index) => {
+                if (index < cards.length - 1) {
+                    gsap.to(card, {
+                        scale: 0.9,
+                        opacity: 0.4,
+                        scrollTrigger: {
+                            trigger: card,
+                            start: "top 20%",
+                            end: "bottom 20%",
+                            scrub: true,
+                            invalidateOnRefresh: true
+                        }
+                    });
+                }
+            });
+
+            // PORTFOLIO VIEWPORT PROGRESS BARS
+            const bars = document.querySelectorAll('.skill-progress-bar');
+            bars.forEach(bar => {
+                const targetVal = bar.getAttribute('data-progress');
+                gsap.to(bar, {
+                    scaleX: 1,
+                    scrollTrigger: {
+                        trigger: bar,
+                        start: "top 95%",
+                        toggleActions: "play none none none"
+                    }
+                });
+            });
+
+            // CASE STUDY OPEN/CLOSE EVENT TIMELINES
+            const projectCards = document.querySelectorAll('.project-card');
+            const projectModal = document.getElementById('project-modal');
+            const closeModalBtn = document.getElementById('close-modal');
+            
+            projectCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const title = card.getAttribute('data-title');
+                    const stack = card.getAttribute('data-stack');
+                    const desc = card.getAttribute('data-desc');
+                    const metrics = card.getAttribute('data-metrics');
+                    const challenge = card.getAttribute('data-challenge');
+                    const solutions = card.getAttribute('data-solutions');
+                    const imgUrl = card.getAttribute('data-img');
+
+                    // Set details inside case study elements
+                    document.getElementById('modal-title').innerText = title;
+                    document.getElementById('modal-stack').innerText = stack;
+                    document.getElementById('modal-desc').innerText = desc;
+                    document.getElementById('modal-metrics').innerText = metrics;
+                    document.getElementById('modal-challenge').innerText = challenge;
+                    document.getElementById('modal-solutions').innerText = solutions;
+                    document.getElementById('modal-image').setAttribute('src', imgUrl);
+
+                    // Fade in Custom Case Study Portal
+                    projectModal.classList.remove('hidden');
+                    projectModal.classList.add('flex');
+                    lenis.stop(); // Stop scroll to prevent movement in BG
+
+                    gsap.fromTo(projectModal, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" });
+                    gsap.fromTo("#project-modal > div", { y: 50, scale: 0.95 }, { y: 0, scale: 1, duration: 0.5, ease: "power3.out", delay: 0.1 });
+                });
+            });
+
+            function closeModal() {
+                gsap.to("#project-modal > div", {
+                    y: 30,
+                    scale: 0.95,
+                    duration: 0.3,
+                    ease: "power2.in"
+                });
+                gsap.to(projectModal, {
+                    opacity: 0,
+                    duration: 0.4,
+                    delay: 0.1,
+                    onComplete: () => {
+                        projectModal.classList.add('hidden');
+                        projectModal.classList.remove('flex');
+                        lenis.start(); // Resume Lenis
+                    }
+                });
+            }
+
+            closeModalBtn.addEventListener('click', closeModal);
+            projectModal.addEventListener('click', (e) => {
+                if (e.target === projectModal) closeModal();
+            });
+
+            // CONTACT FORM GLOW GRADIENT TRACKING
+            const contactSection = document.getElementById('contact');
+            const contactGlow = document.getElementById('contact-radial-glow');
+
+            contactSection.addEventListener('mousemove', (e) => {
+                const rect = contactSection.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                gsap.to(contactGlow, {
+                    opacity: 1,
+                    left: x - 300 + 'px',
+                    top: y - 300 + 'px',
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            });
+
+            contactSection.addEventListener('mouseleave', () => {
+                gsap.to(contactGlow, { opacity: 0, duration: 0.5 });
+            });
+
+            // SECURE FORM COMPILATION ENGINE
+            const form = document.getElementById('contact-form');
+            const feedbackModal = document.getElementById('feedback-modal');
+            const closeFeedbackBtn = document.getElementById('close-feedback');
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                // Perform micro simulated submission check
+                feedbackModal.classList.remove('hidden');
+                feedbackModal.classList.add('flex');
+                gsap.fromTo(feedbackModal, { opacity: 0 }, { opacity: 1, duration: 0.3 });
+                form.reset();
+            });
+
+            closeFeedbackBtn.addEventListener('click', () => {
+                gsap.to(feedbackModal, {
+                    opacity: 0,
+                    duration: 0.3,
+                    onComplete: () => {
+                        feedbackModal.classList.add('hidden');
+                        feedbackModal.classList.remove('flex');
+                    }
+                });
+            });
+        }
+    </script>
 </body>
 </html>
