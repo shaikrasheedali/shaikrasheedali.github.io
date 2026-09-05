@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US" translate="no">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -399,6 +399,59 @@
       .footnote { bottom: 8%; font-size: 8px; }
     }
     @media (max-height: 720px) and (max-width: 600px) { .description { font-size: 10px; } .eyebrow { font-size: 9px; } .headline, .headline.name, .project-shot .headline, .contact-shot .headline { font-size: 9.4vw; } .tags { display: none; } }
+    .play-gate { display: flex; flex-direction: column; align-items: center; gap: 22px; overflow-y: auto; overscroll-behavior: contain; padding: max(28px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) max(28px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left)); }
+    .play-gate-heading { position: static; width: min(100%, 680px); margin: auto 0 0; }
+    .play-gate-button { position: static; transform: none; flex-shrink: 0; }
+    .play-gate-copy { position: static; width: min(100%, 560px); max-height: none; overflow: visible; margin-bottom: auto; padding: 0; }
+    .play-gate-message { font-size: 13px; overflow-wrap: anywhere; }
+    .play-gate-note { font-size: 10px; color: #a2ad9b; }
+    .play-gate-cancel, .export-button, .transport button { min-height: 44px; min-width: 44px; }
+    .play-gate-cancel { font-size: 11px; }
+    .voice-options { gap: 8px 16px; }
+    .export-control { max-width: 48%; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+    .export-note { max-height: calc(88% - max(16px, env(safe-area-inset-bottom))); overflow-y: auto; overscroll-behavior: contain; overflow-wrap: anywhere; }
+    .export-note select { max-width: 100%; }
+    .hud { padding-top: 22px; }
+    .hud-meta { flex-wrap: wrap; gap: 4px 12px; }
+    .hud-label { min-width: 0; white-space: normal; overflow-wrap: anywhere; }
+    .voice-buffer { overflow-wrap: anywhere; }
+    .scrub-wrap, .scrubber { height: 36px; }
+    .contact-email { max-width: 100%; overflow-wrap: anywhere; }
+    @media (pointer: coarse) { .hud { opacity: 1; pointer-events: auto; } .cinema.is-idle { cursor: auto; } }
+    @media (prefers-reduced-motion: reduce) { .hud { transition: none; } }
+    @media (max-width: 600px) {
+      .shot { padding: max(24px, env(safe-area-inset-top)) max(7vw, env(safe-area-inset-right)) calc(180px + env(safe-area-inset-bottom)) max(7vw, env(safe-area-inset-left)); overflow-y: auto; overscroll-behavior-y: contain; touch-action: pan-y; }
+      .chapter-line { position: relative; top: auto; left: auto; min-height: 86px; padding-right: 100px; }
+      .chapter-heading strong { max-width: none; font-size: clamp(16px, 5vw, 21px); overflow-wrap: anywhere; }
+      .copy, .project-shot .copy, .contact-shot .copy { position: relative; top: auto; left: auto; width: 100%; transform: none; margin-top: 22px; }
+      .headline, .headline.name, .project-shot .headline, .contact-shot .headline { font-size: clamp(32px, 10.5vw, 60px); overflow-wrap: anywhere; }
+      .description { font-size: 13px; max-width: 100%; }
+      .eyebrow { font-size: 11px; }
+      .tags { display: flex; }
+      .tag { font-size: 9px; }
+      .scene-art, .project-shot .scene-art, .shot:not([data-scene="intro"]):not([data-scene="contact"]) .scene-art { position: relative; top: auto; left: auto; width: 65%; height: clamp(220px, 30vh, 300px); margin: 32px 0 44px auto; }
+      .shot[data-scene="intro"] .scene-art, .shot[data-scene="contact"] .scene-art { width: 80%; margin-left: auto; margin-right: auto; }
+      .scene-sequence { position: relative; bottom: auto; left: auto; width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+      .story-beat h3 { font-size: 12px; }
+      .story-beat p { display: block; font-size: 11px; }
+      .footnote { position: relative; bottom: auto; left: auto; max-width: 100%; font-size: 10px; margin-top: 24px; }
+      .export-control { top: max(24px, env(safe-area-inset-top)); right: max(7vw, env(safe-area-inset-right)); max-width: 96px; }
+      .cinema:has(.export-control > :nth-child(3)) .chapter-line { min-height: 152px; }
+      .export-button { padding: 9px; font-size: 11px; }
+      .export-note { top: max(20px, env(safe-area-inset-top)); max-height: calc(100% - max(20px, env(safe-area-inset-top)) - max(20px, env(safe-area-inset-bottom))); }
+      .hud-meta { display: grid; grid-template-columns: 1fr auto; }
+      .hud-label { grid-column: 1 / -1; grid-row: 1; }
+      .transport { gap: 10px; }
+      .contact-email { font-size: clamp(13px, 4vw, 18px); gap: 8px; }
+    }
+    @media (max-height: 540px) and (min-width: 601px) {
+      .copy, .project-shot .copy, .contact-shot .copy { top: 24%; transform: none; max-height: calc(76% - 155px); overflow-y: auto; overscroll-behavior: contain; padding: 4px; }
+      .scene-sequence { bottom: 110px; }
+      .footnote { display: none; }
+      .export-control { top: max(12px, env(safe-area-inset-top)); }
+      .export-note { top: 16px; max-height: calc(100% - 32px); }
+      .hud { padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+    }
   </style>
 </head>
 <body>
@@ -472,6 +525,9 @@
       const {requestId, profile} = request;
       const report = (message, stage = 'generate') => self.postMessage({type: 'status', requestId, message, stage, backend: profile.backend, precision: profile.precision});
       try {
+        if (!/^a[mf]_/.test(VOICE)) throw new Error('Narration requires an American English voice.');
+        if (profile.backend === 'webgpu' && profile.precision !== 'fp32') throw new Error('GPU narration requires full precision. Retry with the CPU voice.');
+        if (typeof request.text !== 'string' || !request.text.trim()) throw new Error('Narration text is missing.');
         if (!synthesizer) {
           report('Loading the voice engine…', 'load');
           const {KokoroTTS} = await import(KOKORO_MODULE);
@@ -886,8 +942,16 @@
         const progress = reducedMotion ? 1 : clamp(local / 1.8, 0, 1);
         const blend = progress ** 3 * (progress * (progress * 6 - 15) + 10);
         const size = previous.size + (target.size - previous.size) * blend;
-        const horizontal = previous.x + (target.x - previous.x) * blend;
-        const vertical = previous.y + (target.y - previous.y) * blend;
+        let horizontal = previous.x + (target.x - previous.x) * blend;
+        let vertical = previous.y + (target.y - previous.y) * blend;
+        if (viewport.width <= 600) {
+          const bounds = root.getBoundingClientRect();
+          const artwork = shots[index].querySelector('.scene-art').getBoundingClientRect();
+          const featured = scene.id === 'intro' || scene.id === 'contact';
+          horizontal = featured ? artwork.left - bounds.left + (artwork.width - size) / 2 : viewport.width * .07;
+          vertical = artwork.top - bounds.top + (artwork.height - size) / 2;
+          subject.style.visibility = vertical >= 100 && vertical + size <= viewport.height - 150 ? 'visible' : 'hidden';
+        } else subject.style.visibility = 'visible';
         subject.style.width = `${size.toFixed(3)}px`;
         subject.style.height = `${size.toFixed(3)}px`;
         subject.style.fontSize = `${clamp(size * .04, 6, 10).toFixed(2)}px`;
@@ -950,10 +1014,12 @@
         });
       }, root);
       viewportObserver.observe(root);
+      const scrollPortrait = () => { if (viewport.width <= 600) draw(); };
+      root.addEventListener('scroll', scrollPortrait, true);
       return {
         timeline,
         seek(time) { timeline.time(clamp(time, 0, DURATION), false); draw(); },
-        destroy() { viewportObserver.disconnect(); context.revert(); orbit.pause(); waveform.pause(); anime.remove(root.querySelector('.orbit-rotation')); anime.remove(root.querySelectorAll('.waveform i')); atmosphere.destroy(); }
+        destroy() { root.removeEventListener('scroll', scrollPortrait, true); viewportObserver.disconnect(); context.revert(); orbit.pause(); waveform.pause(); anime.remove(root.querySelector('.orbit-rotation')); anime.remove(root.querySelectorAll('.waveform i')); atmosphere.destroy(); }
       };
     }
 
@@ -976,12 +1042,12 @@
       } catch {}
       try { adapter = await within(navigator.gpu?.requestAdapter({powerPreference: mobile ? 'low-power' : 'high-performance'}), 1500); } catch {}
       const small = mobile || memory <= 4 || cores <= 4 || safe || metered;
-      const backend = adapter && !safe ? 'webgpu' : 'wasm';
-      const precision = 'q8';
+      const backend = adapter && !small ? 'webgpu' : 'wasm';
+      const precision = backend === 'webgpu' ? 'fp32' : 'q8';
       return {backend, precision, small, mobile, chunkChars: small ? 160 : 220, fps: small ? 30 : 60,
         nativeRecommended: metered || memory <= 2,
         requireExplicitModel: memory <= 2 || metered,
-        label: `Quantized · Q8 / ${backend === 'webgpu' ? 'GPU' : 'CPU'}`};
+        label: `English · Michael · ${precision.toUpperCase()} / ${backend === 'webgpu' ? 'GPU' : 'CPU'}`};
     }
 
     function openVoiceCache() {
@@ -1002,7 +1068,7 @@
     }
 
     function voiceCacheKey(index, profile) {
-      return `kokoro-v1-am_michael-pronunciation-v5:${profile.precision}:${profile.chunkChars}:${SCENES[index].id}:${SPOKEN_NARRATION[SCENES[index].id]}`;
+      return `kokoro-js-1.2.1-en-US-am_michael-audio-v6:${profile.backend}:${profile.precision}:${profile.chunkChars}:${SCENES[index].id}:${SPOKEN_NARRATION[SCENES[index].id]}`;
     }
 
     async function readVoiceCache(database, key) {
@@ -1125,7 +1191,7 @@
         try {
           const database = await this.cache;
           let key = voiceCacheKey(task.index, this.profile);
-          let samples = await readVoiceCache(database, key);
+          let samples = this.profile.refresh ? null : await readVoiceCache(database, key);
           if (task.canceled || this.disposed) throw aborted();
           if (!samples) {
             try { samples = await this.infer(task); }
@@ -1133,9 +1199,9 @@
               if (error.name === 'AbortError' || task.canceled || this.disposed) throw aborted();
               this.stopWorker();
               try { localStorage.setItem('rasheed-voice-safe-until', String(Date.now() + 86400000)); } catch {}
-              if (this.downgraded) throw error;
+              if (this.downgraded || this.profile.refresh) throw error;
               this.downgraded = true;
-              this.profile = {...this.profile, backend: 'wasm', precision: 'q8', chunkChars: 120, small: true, fps: 30, label: 'Recovery · Q8 / CPU'};
+              this.profile = {...this.profile, backend: 'wasm', precision: 'q8', chunkChars: 120, small: true, fps: 30, label: 'English · Michael · Recovery Q8 / CPU'};
               this.rateSamples.length = 0; this.realTimeFactor = 1;
               this.onProgress({message: 'Recovering with a fresh, lower-memory CPU worker…', profile: this.profile});
               key = voiceCacheKey(task.index, this.profile);
@@ -1172,7 +1238,7 @@
           };
           const watch = stage => { clearTimeout(timeout); timeout = setTimeout(() => {
             this.stopWorker(); finish(new Error('This device could not prepare the voice promptly. Try the instant device voice.'));
-          }, stage === 'load' ? 120000 : this.profile.small ? 45000 : 75000); };
+          }, stage === 'load' ? 120000 : this.profile.backend === 'wasm' && this.profile.precision === 'fp32' ? 180000 : this.profile.small ? 45000 : 75000); };
           this.rejectInference = error => finish(error);
           this.receive = result => {
             if (result.requestId !== requestId || settled) return;
@@ -1396,24 +1462,32 @@
       }
     }
 
+    function englishVoiceLanguage(voice) {
+      const language = String(voice?.lang || '').trim().replace(/_/g, '-');
+      return /^en(?:-[a-z0-9]{2,8})*$/i.test(language) ? language : null;
+    }
+
     function localDeviceVoice() {
       if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return null;
-      const voices = window.speechSynthesis.getVoices().filter(voice => voice.localService && /^en(?:-|_)/i.test(voice.lang));
-      return voices.find(voice => /^en-US$/i.test(voice.lang)) || voices[0] || null;
+      const voices = window.speechSynthesis.getVoices().filter(voice => voice.localService && englishVoiceLanguage(voice));
+      return voices.find(voice => /^en-US$/i.test(englishVoiceLanguage(voice))) || voices.find(voice => voice.default) || voices[0] || null;
     }
 
     async function waitForDeviceVoice() {
       const existing = localDeviceVoice();
       if (existing || !window.speechSynthesis) return existing;
       return new Promise(resolve => {
-        const finish = () => { clearTimeout(timeout); window.speechSynthesis.removeEventListener('voiceschanged', finish); resolve(localDeviceVoice()); };
-        const timeout = setTimeout(finish, 1000);
-        window.speechSynthesis.addEventListener('voiceschanged', finish);
+        const finish = voice => { clearTimeout(timeout); window.speechSynthesis.removeEventListener('voiceschanged', check); resolve(voice); };
+        const check = () => { const voice = localDeviceVoice(); if (voice) finish(voice); };
+        const timeout = setTimeout(() => finish(localDeviceVoice()), 3000);
+        window.speechSynthesis.addEventListener('voiceschanged', check);
+        check();
       });
     }
 
     class DeviceVoiceClock {
       constructor(voice, onChange) {
+        if (!voice?.localService || !englishVoiceLanguage(voice)) throw new Error('Choose an installed English voice or use Kokoro English narration.');
         this.voice = voice; this.onChange = onChange; this.ready = true; this.index = 0; this.offset = 0;
         this.running = false; this.waiting = false; this.wanted = false; this.disposed = false;
         this.operation = 0; this.character = 0; this.anchor = 0; this.tail = false; this.timer = null; this.watchdog = null;
@@ -1427,7 +1501,7 @@
         if (this.time() >= DURATION) { this.index = 0; this.offset = 0; this.character = 0; this.tail = false; }
         this.wanted = true; this.running = true; this.anchor = performance.now();
         const operation = ++this.operation;
-        this.onChange('playing'); this.speak(operation); return true;
+        this.onChange('playing'); this.speak(operation); return this.running && this.wanted && operation === this.operation;
       }
       speak(operation) {
         if (this.disposed || !this.wanted || operation !== this.operation) return;
@@ -1448,21 +1522,25 @@
         const sentence = remaining.match(/^[\s\S]*?[.!?](?:\s|$)/)?.[0];
         if (sentence && sentence.length <= length) length = sentence.length;
         else if (length < remaining.length) length = Math.max(1, remaining.lastIndexOf(' ', length));
-        const utterance = new SpeechSynthesisUtterance(remaining.slice(0, length));
-        utterance.voice = this.voice; utterance.lang = this.voice.lang; utterance.rate = 1; utterance.volume = 1;
         const fail = message => {
           if (operation !== this.operation) return;
           this.pause(); this.onChange('error', new Error(message));
         };
+        const currentVoice = window.speechSynthesis.getVoices().find(voice => voice.localService && englishVoiceLanguage(voice) && voice.voiceURI === this.voice.voiceURI && voice.name === this.voice.name && englishVoiceLanguage(voice).toLowerCase() === englishVoiceLanguage(this.voice).toLowerCase());
+        if (!currentVoice) { fail('The selected English voice is no longer available. Choose another English voice or Kokoro narration.'); return; }
+        const utterance = new SpeechSynthesisUtterance(remaining.slice(0, length));
+        this.utterance = utterance;
+        utterance.voice = currentVoice; utterance.lang = englishVoiceLanguage(currentVoice); utterance.rate = 1; utterance.volume = 1;
         utterance.onboundary = event => { if (operation === this.operation && Number.isFinite(event.charIndex)) this.character = start + event.charIndex; };
         utterance.onend = () => { if (operation !== this.operation) return; clearTimeout(this.watchdog); this.character = start + length; this.speak(operation); };
         utterance.onerror = () => { if (operation !== this.operation) return; clearTimeout(this.watchdog); fail('The device voice was blocked or interrupted. Click Play to retry, or use Kokoro narration.'); };
         this.watchdog = setTimeout(() => fail('The device voice stopped responding. Click Play to resume.'), 25000);
-        window.speechSynthesis.speak(utterance);
+        try { window.speechSynthesis.speak(utterance); }
+        catch { fail('The English device voice could not start. Try Kokoro narration.'); }
       }
       pause() {
         this.offset = this.localTime(); ++this.operation; this.running = false; this.wanted = false;
-        clearTimeout(this.timer); clearTimeout(this.watchdog); window.speechSynthesis.cancel(); this.onChange('paused');
+        clearTimeout(this.timer); clearTimeout(this.watchdog); window.speechSynthesis.cancel(); this.utterance = null; this.onChange('paused');
       }
       seek(time) {
         const resume = this.wanted; this.pause();
@@ -1607,6 +1685,7 @@
       const exportRef = useRef(null), downloadRef = useRef(null);
       const [exportStatus, setExportStatus] = useState({phase: 'idle', percent: 0, message: ''});
       const [exportOpen, setExportOpen] = useState(false);
+      const [voiceOpen, setVoiceOpen] = useState(false);
       const [exportResolution, setExportResolution] = useState('1080');
       const [activeScene, setActiveScene] = useState(0);
       const [playing, setPlaying] = useState(false);
@@ -1697,8 +1776,8 @@
           return false;
         }
         const resumed = await clock.play();
-        if (!resumed || !mountedRef.current) return false;
-        startedRef.current = true; setHasStarted(true);
+        if (!resumed || !mountedRef.current || audioRef.current !== clock) return false;
+        startedRef.current = true; setHasStarted(true); setVoiceOpen(false);
         setNarrationStatus(current => ({...current, phase: 'ready', message: ''}));
         syncPlayback(); showControls(); return true;
       }
@@ -1708,7 +1787,7 @@
         setPlaying(Boolean(clock?.wanted));
         if (clock) masterRef.current?.time(clock.time(), false);
         if (reason === 'playing') {
-          startedRef.current = true; setHasStarted(true);
+          startedRef.current = true; setHasStarted(true); setVoiceOpen(false);
           setNarrationStatus(current => ({...current, phase: 'ready', message: ''}));
         } else if (reason === 'buffering') {
           setNarrationStatus(current => ({...current, phase: startedRef.current ? 'buffering' : 'loading', message: 'Preparing narration and a speed-adjusted safety buffer before playback.'}));
@@ -1732,7 +1811,7 @@
           setNarrationStatus({phase: 'loading', message: 'Choosing a voice that fits this device…'});
           let voice = requestedMode === 'device' ? localDeviceVoice() : null;
           let profile;
-          if (voice) profile = {small: true, fps: 30, label: 'Instant · local device voice', backend: 'device'};
+          if (voice) profile = {small: true, fps: 30, label: `English · ${voice.name} · ${englishVoiceLanguage(voice)}`, backend: 'device'};
           else {
             const Context = window.AudioContext || window.webkitAudioContext;
             if (Context && requestedMode !== 'device') {
@@ -1740,12 +1819,13 @@
               await pendingContextRef.current.resume();
             }
             profile = await chooseVoiceProfile();
+            if (requestedMode === 'cpu') profile = {...profile, backend: 'wasm', precision: 'fp32', chunkChars: 120, small: true, fps: 30, refresh: true, label: 'English · Michael · Fresh FP32 / CPU'};
             if (preparation !== preparationRef.current || !mountedRef.current) return;
             if (requestedMode === 'device' || (requestedMode === 'auto' && profile.nativeRecommended)) voice = await waitForDeviceVoice();
           }
           if (preparation !== preparationRef.current || !mountedRef.current) return;
           if (voice) {
-            profile = {...profile, backend: 'device', small: true, fps: 30, label: 'Instant · local device voice'};
+            profile = {...profile, backend: 'device', small: true, fps: 30, label: `English · ${voice.name} · ${englishVoiceLanguage(voice)}`};
             if (pendingContextRef.current) { void pendingContextRef.current.close().catch(() => {}); pendingContextRef.current = null; }
             audioRef.current = new DeviceVoiceClock(voice, clockChanged);
           } else {
@@ -1764,7 +1844,7 @@
           profileRef.current = profile; setLowPower(profile.small);
           audioRef.current.index = index; audioRef.current.offset = Math.min(offset, SCENES[index].duration - .001);
           if (voice) audioRef.current.seek(SCENES[index].start + offset);
-          setNarrationStatus({phase: 'loading', label: profile.label, message: voice ? 'Starting the local device voice…' : 'Measuring Q8 inference speed and preparing a 15-second safety margin…'});
+          setNarrationStatus({phase: 'loading', label: profile.label, message: voice ? `Starting ${voice.name} in English…` : `Preparing English narration with ${profile.precision.toUpperCase()} precision and a 15-second safety margin…`});
           setFilmRevision(revision => revision + 1);
           await beginPlayback();
         } catch (error) {
@@ -1832,7 +1912,7 @@
               const clock = audioRef.current;
               const pipeline = clock?.pipeline;
               const buffer = pipeline?.bufferState(clock.index, clock.localTime());
-              voiceBufferRef.current.textContent = buffer ? `Q8 · ${Math.floor(buffer.ahead)}s ready · ${pipeline.rateSamples.length ? `${(1 / pipeline.realTimeFactor).toFixed(1)}× inference` : 'cached audio'} · 15s safety target` : 'Local device voice';
+              voiceBufferRef.current.textContent = buffer ? `English · ${pipeline.profile.precision.toUpperCase()} / ${pipeline.profile.backend === 'webgpu' ? 'GPU' : 'CPU'} · ${Math.floor(buffer.ahead)}s ready · ${pipeline.rateSamples.length ? `${(1 / pipeline.realTimeFactor).toFixed(1)}× inference` : 'cached audio'}` : profileRef.current?.label || 'English device voice';
             }
             if (rangeRef.current) rangeRef.current.setAttribute('aria-valuetext', `${timecode(now)} of ${timecode(DURATION)}, ${CHAPTERS[SCENES[index].chapter]}`);
           }
@@ -1879,7 +1959,7 @@
           if (exportRef.current || event.target.closest?.('.export-note, .export-control')) return;
           if (event.altKey || event.ctrlKey || event.metaKey) return;
           const target = event.target;
-          if (target instanceof Element && target.closest('input, textarea, select, [contenteditable="true"]')) return;
+          if (target instanceof Element && target.closest('input, textarea, select, [contenteditable="true"], .play-gate, .export-note')) return;
           if (event.code === 'Space' && target instanceof Element && target.closest('button, a')) return;
           if (event.code === 'Space') { event.preventDefault(); if (!event.repeat) togglePlayback(); }
           else if (event.code === 'ArrowRight') { event.preventDefault(); skip(1, event.shiftKey); }
@@ -1923,16 +2003,38 @@
           event.preventDefault(); skip(event.code === 'ArrowRight' ? 1 : -1, event.shiftKey);
         }
       }
-      const gateVisible = !hasStarted || narrationStatus.phase === 'error';
+      const gateVisible = voiceOpen || !hasStarted || narrationStatus.phase === 'error';
       const preparing = narrationStatus.phase === 'loading';
+      useEffect(() => {
+        if (!gateVisible) return;
+        const previous = document.activeElement;
+        const dialog = cinemaRef.current?.querySelector('.play-gate');
+        const controls = () => [...dialog.querySelectorAll('button:not(:disabled), a[href]')];
+        controls()[0]?.focus();
+        const trapFocus = event => {
+          if (event.key !== 'Tab') return;
+          const available = controls();
+          const first = available[0], last = available[available.length - 1];
+          if (!first) { event.preventDefault(); return; }
+          if (event.shiftKey && (document.activeElement === first || !dialog.contains(document.activeElement))) { event.preventDefault(); last.focus(); }
+          else if (!event.shiftKey && (document.activeElement === last || !dialog.contains(document.activeElement))) { event.preventDefault(); first.focus(); }
+        };
+        document.addEventListener('keydown', trapFocus);
+        return () => {
+          document.removeEventListener('keydown', trapFocus);
+          if (previous?.isConnected) previous.focus();
+          else cinemaRef.current?.querySelector('.export-control button')?.focus();
+        };
+      }, [gateVisible]);
       return <main ref={cinemaRef} className={`cinema ${lowPower ? 'low-power' : ''} ${exporting ? 'is-exporting' : ''} ${gateVisible || hudVisible || exportOpen ? '' : 'is-idle'}`} aria-label="Rasheed Ali Shaik cinematic portfolio" aria-describedby="cinema-instructions" onPointerMove={showControls} onPointerDown={showControls} onFocusCapture={showControls} onPointerLeave={() => { if (!dragRef.current) setHudVisible(false); }} onClick={event => { if (!event.target.closest('a, button, input, select, video, .hud, .play-gate, .buffering-note, .export-note, .export-control')) togglePlayback(); }}>
-        <p id="cinema-instructions" className="sr-only">A six-chapter narrated portfolio. Activate Play to start with a hardware-adaptive voice. Quantized eight-bit Kokoro generates narration in a background browser worker. Measured inference speed determines the preload, aiming to keep at least fifteen seconds ready ahead of playback. Slow devices need a larger initial buffer; severely constrained devices prefer an installed local voice. Space pauses or plays. Arrows seek five seconds; Shift plus an arrow navigates chapters. Home restarts; End opens contact information. Kokoro seeks within recorded audio; device voice seeks to an approximate word position. The total duration is estimated until narration is prepared. Move the pointer to reveal controls.</p>
+        <p id="cinema-instructions" className="sr-only">A six-chapter portfolio narrated in English. Activate Play to start. Kokoro uses full precision on the GPU or eight-bit precision on the CPU in a background worker. Adaptive buffering aims to keep fifteen seconds ready. Limited devices prefer an installed English voice. Open Voice to change narration or regenerate fresh full-precision CPU audio if speech sounds wrong. Space pauses or plays. Arrows seek five seconds; Shift plus an arrow navigates chapters. Home restarts; End opens contact information. Device voice seeking is approximate. Duration is estimated until narration is prepared. Move the pointer or focus a control to reveal playback controls.</p>
         <canvas ref={canvasRef} className="ambient" aria-hidden="true"/>
         <div className="atmosphere"/>
         <div className="stage">{SCENES.map((scene,index) => <Shot key={scene.id} scene={scene} index={index} active={!gateVisible && activeScene === index}/>)}</div>
         <Character/>
         <div className="vignette"/><div className="grain"/>
         {!gateVisible && <div className="export-control">
+          <button className="export-button" disabled={exporting} onClick={() => { audioRef.current?.pause(); syncPlayback(); setExportOpen(false); setVoiceOpen(true); }} aria-haspopup="dialog">Voice · EN</button>
           {exportStatus.phase === 'ready' ? <a className="export-button" href={exportStatus.url} download="rasheed-ali-shaik-a-film-in-code.mp4">Download Now ↓</a> : <button className="export-button" onClick={() => setExportOpen(open => !open)} aria-expanded={exportOpen} aria-controls="export-panel">{exporting ? `Exporting · ${Math.floor(exportStatus.percent)}%` : 'Export film ↗'}</button>}
           {exportStatus.phase === 'ready' && <button className="export-button" onClick={() => setExportOpen(open => !open)} aria-label="Preview exported film" aria-expanded={exportOpen}>Preview</button>}
         </div>}
@@ -1956,10 +2058,11 @@
           </button>
           <div className="play-gate-copy">
             <p className="play-gate-label">{preparing ? 'Preparing your narrated premiere' : narrationStatus.phase === 'error' ? 'Narration needs your attention' : 'Play film · Sound on'}</p>
-            <p id="play-gate-description" className={`play-gate-message ${narrationStatus.phase === 'error' ? 'play-gate-error' : ''}`} role="status" aria-live="polite">{narrationStatus.message || 'Quality-focused Q8 narration, generated locally in the background while the film plays. Adaptive buffering targets a 15-second safety margin.'}</p>
-            <p className="play-gate-note">{narrationStatus.label || 'AUTOMATIC HARDWARE SELECTION'}<br/>Inference speed sets the preload; slow devices need more.<br/>Scene-sized buffers may exceed 15 seconds. Clips stay cached locally.<br/>The first model download takes time; device voice avoids it.<br/>Synthetic narration, not Rasheed’s voice. No microphone or text upload.<br/>Device voice uses approximate word-level seeking.</p>
-            <div className="voice-options">{window.speechSynthesis && <button className="play-gate-cancel" onClick={() => startFilm('device')}>Instant device voice</button>}<button className="play-gate-cancel" onClick={() => startFilm('kokoro')}>Kokoro AI voice</button></div>
+            <p id="play-gate-description" className={`play-gate-message ${narrationStatus.phase === 'error' ? 'play-gate-error' : ''}`} role="status" aria-live="polite">{narrationStatus.message || 'English narration, generated locally. Full-precision GPU or memory-saving CPU synthesis, with adaptive buffering for smooth playback.'}</p>
+            <p className="play-gate-note">{narrationStatus.label || 'ENGLISH / AUTOMATIC HARDWARE SELECTION'}<br/>Slow devices need a longer preload. Clips stay cached locally.<br/>The first model download takes time; an installed English voice avoids it.<br/>Synthetic narration, not Rasheed’s voice. No microphone or text upload.<br/>Speech sounds wrong? Regenerate on CPU without reusing cached clips.<br/>Full-precision CPU recovery needs a larger download and more memory.</p>
+            <div className="voice-options">{window.speechSynthesis && <button className="play-gate-cancel" onClick={() => startFilm('device')}>Device English voice</button>}<button className="play-gate-cancel" onClick={() => startFilm('kokoro')}>Kokoro English voice</button><button className="play-gate-cancel" onClick={() => startFilm('cpu')}>Regenerate English · CPU</button></div>
             {preparing && <button className="play-gate-cancel" onClick={cancelPreparation}>Cancel preparation</button>}
+            {voiceOpen && !preparing && hasStarted && <button className="play-gate-cancel" onClick={() => setVoiceOpen(false)}>Back to film</button>}
           </div>
         </div>}
         {!gateVisible && narrationStatus.phase === 'buffering' && <div className="buffering-note" role="status"><div>{narrationStatus.message}</div>{window.speechSynthesis && <button className="play-gate-cancel" onClick={() => startFilm('device')}>Switch to instant device voice</button>}</div>}
